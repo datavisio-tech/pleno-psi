@@ -8,11 +8,11 @@ O planejamento completo inclui:
 
 - ✅ **1 Issue Macro** (Epic principal) - #1 já existente
 - ✅ **10 Fases** (Epics com sub-tarefas) - Issues #2 a #11
-- ✅ **27 Sub-issues** individuais (1.1-1.3, 2.1-2.2, 3.1-3.5, 4.1-4.3, 5.1-5.3, 6.1-6.3, 7.1-7.2, 8.1-8.2, 9.1-9.3, 10.1-10.2)
+- ✅ **28 Sub-issues** individuais (1.1-1.3, 2.1-2.2, 3.1-3.5, 4.1-4.3, 5.1-5.3, 6.1-6.3, 7.1-7.2, 8.1-8.2, 9.1-9.3, 10.1-10.2)
 - ✅ **1 Issue Stack Tecnológica** - #12
 - ✅ **1 Issue Versionamento** - #13
 
-**Total: 39 sub-issues** (considerando a issue macro #1 já existente)
+**Total: 40 novas issues** (10 fases + 28 sub-issues + 2 especiais)
 
 ## 📁 Arquivos
 

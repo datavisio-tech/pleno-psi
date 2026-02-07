@@ -1,7 +1,7 @@
 # Planejamento Completo - MVP PlenoPsi
-## Estrutura de Issues (39 Issues)
+## Estrutura de Issues (40 Novas Issues)
 
-Este documento lista todas as 39 issues que serão criadas para o MVP do PlenoPsi.
+Este documento lista todas as 40 novas issues que serão criadas para o MVP do PlenoPsi (além da issue #1 que já existe).
 
 ---
 
@@ -382,12 +382,12 @@ Este documento lista todas as 39 issues que serão criadas para o MVP do PlenoPs
 |-----------|------------|
 | Issue Macro (#1) | 1 |
 | Fases (#2-#11) | 10 |
-| Sub-issues | 27 |
+| Sub-issues | 28 |
 | Issues Especiais (#12-#13) | 2 |
-| **TOTAL** | **40** |
+| **TOTAL** | **41** |
 
-> **Nota:** Contando a issue macro #1 que já existe, temos um total de 40 issues.  
-> Se considerarmos apenas as novas issues a serem criadas, temos 39 issues.
+> **Nota:** Contando a issue macro #1 que já existe, temos um total de 41 issues.  
+> Se considerarmos apenas as novas issues a serem criadas, temos 40 issues (10 fases + 28 sub-issues + 2 especiais).
 
 ---
 
