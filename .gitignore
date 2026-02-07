@@ -1,3 +1,21 @@
+# Ignorar arquivos de issues gerados localmente
+/issues/
+issues-structure.yaml
+created_issues.json
+ISSUES_SUMMARY.md
+issues_summary.json
+issues_readme.md
+issuee_tree.md
+CHANGELOG_AGENT.md
+create_all_issues.sh
+create_issues.py
+
+# Node / Python common ignores (preservar se já existir no repositório)
+node_modules/
+__pycache__/
+*.pyc
+.env
+.venv
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
