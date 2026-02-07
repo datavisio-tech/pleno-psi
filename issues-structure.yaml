@@ -1,0 +1,1296 @@
+# Estrutura Completa de Issues - PlenoPsi MVP
+# Total: 39 issues (10 fases + 27 sub-issues + 1 tech stack + 1 versionamento)
+
+phases:
+  - number: 2
+    title: "Fase 1: Planejamento e Estruturação"
+    description: |
+      Primeira fase do MVP focada em definir requisitos, arquitetura e configurar o projeto inicial.
+      
+      **Duração estimada:** Semanas 1-2
+      
+      **Dependências:** Nenhuma (fase inicial)
+      
+      **Objetivos principais:**
+      - Definir todos os requisitos funcionais e não-funcionais
+      - Estabelecer a arquitetura técnica
+      - Configurar ambientes de desenvolvimento
+    labels:
+      - "fase-1"
+      - "planejamento"
+    blocked_by: []
+    sub_issues:
+      - number: "1.1"
+        title: "Definição de Requisitos"
+        description: |
+          **Objetivo:** Levantar e documentar todos os requisitos essenciais para o MVP
+          
+          **Tarefas:**
+          - [ ] Levantamento de funcionalidades essenciais do MVP
+          - [ ] Definição de personas (psicólogos clínicos, coaches, terapeutas)
+          - [ ] Mapeamento de jornada do usuário
+          - [ ] Definição de critérios de aceitação
+          - [ ] Priorização de features (método MoSCoW)
+          
+          **Entregáveis:**
+          - Documento de requisitos funcionais
+          - Documento de requisitos não-funcionais
+          - Personas definidas
+          - Jornada do usuário mapeada
+          - Backlog priorizado
+          
+          **Critérios de aceite:**
+          - Todos os stakeholders aprovaram os requisitos
+          - Requisitos estão documentados e versionados
+          - Priorização está clara e justificada
+        labels:
+          - "fase-1"
+          - "requisitos"
+          - "documentação"
+        
+      - number: "1.2"
+        title: "Arquitetura e Tecnologia"
+        description: |
+          **Objetivo:** Definir toda a stack tecnológica e arquitetura da solução
+          
+          **Tarefas:**
+          - [ ] Definição da stack tecnológica (Frontend/Backend/DB)
+          - [ ] Arquitetura da solução (microserviços/monolito)
+          - [ ] Definição de integrações necessárias
+          - [ ] Escolha de serviços cloud (AWS/Azure/GCP)
+          - [ ] Planejamento de segurança e compliance (LGPD/HIPAA)
+          
+          **Entregáveis:**
+          - Diagrama de arquitetura
+          - Documento de decisões técnicas (ADR)
+          - Plano de segurança e privacidade
+          - Lista de tecnologias aprovadas
+          
+          **Critérios de aceite:**
+          - Arquitetura está documentada e aprovada
+          - Stack tecnológica está definida
+          - Requisitos de segurança estão mapeados
+        labels:
+          - "fase-1"
+          - "arquitetura"
+          - "tecnologia"
+        
+      - number: "1.3"
+        title: "Configuração do Projeto"
+        description: |
+          **Objetivo:** Configurar todos os ambientes e ferramentas de desenvolvimento
+          
+          **Tarefas:**
+          - [ ] Estrutura de repositórios (monorepo ou multi-repo)
+          - [ ] Configuração de ambientes (dev/staging/prod)
+          - [ ] Setup de CI/CD (GitHub Actions, GitLab CI, etc)
+          - [ ] Configuração de ferramentas (linters, formatters, pre-commit hooks)
+          - [ ] Documentação inicial (README, CONTRIBUTING, CODE_OF_CONDUCT)
+          
+          **Entregáveis:**
+          - Repositórios configurados
+          - Pipeline CI/CD funcionando
+          - Ambientes provisionados
+          - Documentação de setup completa
+          
+          **Critérios de aceite:**
+          - Desenvolvedores conseguem fazer setup local
+          - CI/CD roda com sucesso
+          - Documentação está completa
+        labels:
+          - "fase-1"
+          - "configuração"
+          - "devops"
+
+  - number: 3
+    title: "Fase 2: Design e Prototipagem"
+    description: |
+      Segunda fase focada em criar o design system e protótipos de alta fidelidade.
+      
+      **Duração estimada:** Semanas 3-4
+      
+      **Dependências:** Fase 1 deve estar concluída
+      
+      **Objetivos principais:**
+      - Criar identidade visual consistente
+      - Desenvolver protótipos navegáveis
+      - Validar UX com usuários reais
+    labels:
+      - "fase-2"
+      - "design"
+    blocked_by: [2]
+    sub_issues:
+      - number: "2.1"
+        title: "Design System e UI/UX"
+        description: |
+          **Objetivo:** Criar um design system completo e consistente
+          
+          **Tarefas:**
+          - [ ] Definição de paleta de cores (baseada na identidade PlenoPsi)
+          - [ ] Tipografia e hierarquia visual
+          - [ ] Componentes reutilizáveis (buttons, inputs, cards, etc)
+          - [ ] Padrões de layout e grid system
+          - [ ] Guia de estilo e documentação
+          
+          **Entregáveis:**
+          - Design system no Figma/Adobe XD
+          - Biblioteca de componentes
+          - Guia de estilo
+          - Paleta de cores e tipografia definidas
+          
+          **Critérios de aceite:**
+          - Design system está completo e documentado
+          - Todos os componentes principais estão desenhados
+          - Acessibilidade (WCAG) está considerada
+        labels:
+          - "fase-2"
+          - "design-system"
+          - "ui-ux"
+        
+      - number: "2.2"
+        title: "Protótipos de Alta Fidelidade"
+        description: |
+          **Objetivo:** Criar protótipos navegáveis de todas as telas principais
+          
+          **Tarefas:**
+          - [ ] Wireframes de baixa fidelidade
+          - [ ] Protótipos de alta fidelidade das telas principais
+          - [ ] Fluxos de navegação completos
+          - [ ] Protótipo interativo/navegável
+          - [ ] Validação com usuários (testes de usabilidade)
+          
+          **Entregáveis:**
+          - Protótipos de alta fidelidade
+          - Fluxos de navegação documentados
+          - Relatório de testes de usabilidade
+          - Ajustes baseados em feedback
+          
+          **Critérios de aceite:**
+          - Todas as telas principais estão prototipadas
+          - Protótipo é navegável
+          - Feedback de usuários foi incorporado
+        labels:
+          - "fase-2"
+          - "prototipagem"
+          - "validação"
+
+  - number: 4
+    title: "Fase 3: Desenvolvimento Backend"
+    description: |
+      Terceira fase focada em desenvolver toda a API e lógica de negócio.
+      
+      **Duração estimada:** Semanas 5-8
+      
+      **Dependências:** Fases 1 e 2 devem estar concluídas
+      
+      **Objetivos principais:**
+      - Implementar API RESTful completa
+      - Configurar banco de dados
+      - Implementar autenticação e autorização
+      - Garantir segurança e performance
+    labels:
+      - "fase-3"
+      - "backend"
+    blocked_by: [2, 3]
+    sub_issues:
+      - number: "3.1"
+        title: "Configuração do Backend e Banco de Dados"
+        description: |
+          **Objetivo:** Configurar infraestrutura backend e banco de dados
+          
+          **Tarefas:**
+          - [ ] Setup do framework backend (Node.js/Express, Django, etc)
+          - [ ] Configuração do banco de dados (PostgreSQL, MySQL, MongoDB)
+          - [ ] Migrations e schema inicial
+          - [ ] Seeders para dados de desenvolvimento
+          - [ ] Configuração de variáveis de ambiente
+          
+          **Entregáveis:**
+          - Servidor backend funcionando
+          - Banco de dados configurado
+          - Schema de banco documentado
+          - Scripts de migration
+          
+          **Critérios de aceite:**
+          - Backend roda localmente sem erros
+          - Banco de dados está configurado corretamente
+          - Migrations funcionam
+        labels:
+          - "fase-3"
+          - "backend"
+          - "database"
+        
+      - number: "3.2"
+        title: "API de Autenticação e Usuários"
+        description: |
+          **Objetivo:** Implementar sistema completo de autenticação e gestão de usuários
+          
+          **Tarefas:**
+          - [ ] Endpoints de registro e login
+          - [ ] JWT ou OAuth2 para autenticação
+          - [ ] Gestão de sessões
+          - [ ] Recuperação de senha
+          - [ ] Perfis de usuário (psicólogo, admin)
+          
+          **Entregáveis:**
+          - API de autenticação completa
+          - Documentação da API (Swagger/OpenAPI)
+          - Testes unitários e de integração
+          
+          **Critérios de aceite:**
+          - Usuários conseguem registrar e fazer login
+          - Tokens são gerados e validados corretamente
+          - Segurança está implementada (hash de senhas, etc)
+        labels:
+          - "fase-3"
+          - "autenticação"
+          - "api"
+        
+      - number: "3.3"
+        title: "API de Pacientes"
+        description: |
+          **Objetivo:** Implementar CRUD completo de pacientes
+          
+          **Tarefas:**
+          - [ ] Model e schema de pacientes
+          - [ ] Endpoints CRUD (criar, ler, atualizar, deletar)
+          - [ ] Validações e regras de negócio
+          - [ ] Soft delete para manter histórico
+          - [ ] Busca e filtros
+          
+          **Entregáveis:**
+          - API de pacientes completa
+          - Documentação dos endpoints
+          - Testes automatizados
+          
+          **Critérios de aceite:**
+          - Todos os endpoints CRUD funcionam
+          - Validações estão implementadas
+          - Dados sensíveis estão protegidos
+        labels:
+          - "fase-3"
+          - "pacientes"
+          - "api"
+        
+      - number: "3.4"
+        title: "API de Agendamentos"
+        description: |
+          **Objetivo:** Implementar sistema de agendamento de consultas
+          
+          **Tarefas:**
+          - [ ] Model de agendamentos
+          - [ ] Endpoints para criar/editar/cancelar consultas
+          - [ ] Validação de conflitos de horário
+          - [ ] Sistema de notificações/lembretes
+          - [ ] Integração com calendário
+          
+          **Entregáveis:**
+          - API de agendamentos completa
+          - Sistema de validação de conflitos
+          - Documentação
+          - Testes
+          
+          **Critérios de aceite:**
+          - Consultas podem ser agendadas sem conflitos
+          - Sistema previne double booking
+          - Notificações são enviadas
+        labels:
+          - "fase-3"
+          - "agendamentos"
+          - "api"
+        
+      - number: "3.5"
+        title: "API Financeira"
+        description: |
+          **Objetivo:** Implementar gestão financeira completa
+          
+          **Tarefas:**
+          - [ ] Model de transações financeiras
+          - [ ] Endpoints para recebimentos e despesas
+          - [ ] Cálculo de relatórios financeiros
+          - [ ] Emissão de recibos
+          - [ ] Categorização de transações
+          
+          **Entregáveis:**
+          - API financeira completa
+          - Sistema de relatórios
+          - Documentação
+          - Testes
+          
+          **Critérios de aceite:**
+          - Transações são registradas corretamente
+          - Relatórios são precisos
+          - Recibos são gerados
+        labels:
+          - "fase-3"
+          - "financeiro"
+          - "api"
+
+  - number: 5
+    title: "Fase 4: Desenvolvimento Frontend"
+    description: |
+      Quarta fase focada em desenvolver toda a interface do usuário.
+      
+      **Duração estimada:** Semanas 7-10
+      
+      **Dependências:** Fases 2 e 3 devem estar em andamento
+      
+      **Objetivos principais:**
+      - Implementar todas as telas do sistema
+      - Integrar com API backend
+      - Garantir responsividade e acessibilidade
+    labels:
+      - "fase-4"
+      - "frontend"
+    blocked_by: [3, 4]
+    sub_issues:
+      - number: "4.1"
+        title: "Setup Frontend e Componentes Base"
+        description: |
+          **Objetivo:** Configurar projeto frontend e criar componentes base
+          
+          **Tarefas:**
+          - [ ] Setup do framework (React, Next.js, Vue, etc)
+          - [ ] Configuração de roteamento
+          - [ ] Setup de estado global (Redux, Context API, Zustand)
+          - [ ] Implementação de componentes do design system
+          - [ ] Setup de testes frontend
+          
+          **Entregáveis:**
+          - Aplicação frontend rodando
+          - Biblioteca de componentes implementada
+          - Configuração de testes
+          
+          **Critérios de aceite:**
+          - Aplicação frontend roda localmente
+          - Componentes base estão implementados
+          - Testes estão configurados
+        labels:
+          - "fase-4"
+          - "frontend"
+          - "setup"
+        
+      - number: "4.2"
+        title: "Telas de Autenticação e Perfil"
+        description: |
+          **Objetivo:** Implementar telas de login, registro e perfil
+          
+          **Tarefas:**
+          - [ ] Tela de login
+          - [ ] Tela de registro
+          - [ ] Recuperação de senha
+          - [ ] Tela de perfil do usuário
+          - [ ] Integração com API de autenticação
+          
+          **Entregáveis:**
+          - Telas de autenticação funcionais
+          - Integração com backend
+          - Validações de formulário
+          
+          **Critérios de aceite:**
+          - Usuários conseguem se registrar e fazer login
+          - Validações funcionam corretamente
+          - UX está conforme protótipo
+        labels:
+          - "fase-4"
+          - "autenticação"
+          - "frontend"
+        
+      - number: "4.3"
+        title: "Dashboard e Telas Principais"
+        description: |
+          **Objetivo:** Implementar dashboard e principais funcionalidades
+          
+          **Tarefas:**
+          - [ ] Dashboard com visão geral
+          - [ ] Telas de gestão de pacientes
+          - [ ] Agenda de consultas
+          - [ ] Gestão financeira
+          - [ ] Relatórios e gráficos
+          
+          **Entregáveis:**
+          - Todas as telas principais implementadas
+          - Integração completa com backend
+          - Gráficos e visualizações
+          
+          **Critérios de aceite:**
+          - Todas as funcionalidades principais funcionam
+          - Interface é responsiva
+          - Performance é adequada
+        labels:
+          - "fase-4"
+          - "dashboard"
+          - "frontend"
+
+  - number: 6
+    title: "Fase 5: Testes"
+    description: |
+      Quinta fase focada em garantir qualidade através de testes abrangentes.
+      
+      **Duração estimada:** Semanas 9-11
+      
+      **Dependências:** Fases 3 e 4 devem estar avançadas
+      
+      **Objetivos principais:**
+      - Implementar cobertura de testes adequada
+      - Realizar testes de integração
+      - Executar testes end-to-end
+    labels:
+      - "fase-5"
+      - "testes"
+    blocked_by: [4, 5]
+    sub_issues:
+      - number: "5.1"
+        title: "Testes Unitários Backend"
+        description: |
+          **Objetivo:** Garantir cobertura de testes unitários no backend
+          
+          **Tarefas:**
+          - [ ] Testes de controllers
+          - [ ] Testes de services/business logic
+          - [ ] Testes de models
+          - [ ] Testes de utils e helpers
+          - [ ] Alcançar cobertura mínima de 80%
+          
+          **Entregáveis:**
+          - Suite de testes unitários
+          - Relatório de cobertura
+          - CI rodando testes automaticamente
+          
+          **Critérios de aceite:**
+          - Cobertura >= 80%
+          - Todos os testes passam
+          - Testes rodam no CI
+        labels:
+          - "fase-5"
+          - "testes"
+          - "backend"
+        
+      - number: "5.2"
+        title: "Testes Unitários e de Componentes Frontend"
+        description: |
+          **Objetivo:** Garantir cobertura de testes no frontend
+          
+          **Tarefas:**
+          - [ ] Testes de componentes (Jest + Testing Library)
+          - [ ] Testes de hooks customizados
+          - [ ] Testes de utils
+          - [ ] Testes de integração de telas
+          - [ ] Alcançar cobertura mínima de 70%
+          
+          **Entregáveis:**
+          - Suite de testes frontend
+          - Relatório de cobertura
+          - CI rodando testes automaticamente
+          
+          **Critérios de aceite:**
+          - Cobertura >= 70%
+          - Todos os testes passam
+          - Testes rodam no CI
+        labels:
+          - "fase-5"
+          - "testes"
+          - "frontend"
+        
+      - number: "5.3"
+        title: "Testes End-to-End (E2E)"
+        description: |
+          **Objetivo:** Implementar testes E2E dos fluxos principais
+          
+          **Tarefas:**
+          - [ ] Setup de ferramentas E2E (Cypress, Playwright)
+          - [ ] Testes de fluxo de autenticação
+          - [ ] Testes de gestão de pacientes
+          - [ ] Testes de agendamento
+          - [ ] Testes de funcionalidades financeiras
+          
+          **Entregáveis:**
+          - Suite de testes E2E
+          - Testes rodando no CI
+          - Documentação de cenários
+          
+          **Critérios de aceite:**
+          - Principais fluxos estão cobertos
+          - Testes rodam de forma estável
+          - CI executa testes E2E
+        labels:
+          - "fase-5"
+          - "testes"
+          - "e2e"
+
+  - number: 7
+    title: "Fase 6: Deploy e Infraestrutura"
+    description: |
+      Sexta fase focada em configurar infraestrutura de produção e deploy.
+      
+      **Duração estimada:** Semana 11-12
+      
+      **Dependências:** Fases anteriores devem estar quase completas
+      
+      **Objetivos principais:**
+      - Configurar ambientes de produção
+      - Implementar CI/CD completo
+      - Configurar monitoramento e logs
+    labels:
+      - "fase-6"
+      - "infraestrutura"
+    blocked_by: [4, 5, 6]
+    sub_issues:
+      - number: "6.1"
+        title: "Configuração de Ambientes"
+        description: |
+          **Objetivo:** Configurar ambientes staging e produção
+          
+          **Tarefas:**
+          - [ ] Provisionamento de servidores (VPS Hostinger)
+          - [ ] Configuração de domínios e SSL
+          - [ ] Setup de banco de dados em produção
+          - [ ] Configuração de variáveis de ambiente
+          - [ ] Backup automático
+          
+          **Entregáveis:**
+          - Ambientes staging e produção configurados
+          - Documentação de infraestrutura
+          - Plano de backup
+          
+          **Critérios de aceite:**
+          - Ambientes estão acessíveis
+          - SSL está configurado
+          - Backups estão funcionando
+        labels:
+          - "fase-6"
+          - "infraestrutura"
+          - "devops"
+        
+      - number: "6.2"
+        title: "CI/CD e Automação de Deploy"
+        description: |
+          **Objetivo:** Implementar pipeline completo de CI/CD
+          
+          **Tarefas:**
+          - [ ] Pipeline de build e testes
+          - [ ] Deploy automático para staging
+          - [ ] Deploy aprovado para produção
+          - [ ] Rollback automático em caso de falha
+          - [ ] Notificações de deploy
+          
+          **Entregáveis:**
+          - Pipeline CI/CD funcionando
+          - Documentação de processo de deploy
+          - Runbook para troubleshooting
+          
+          **Critérios de aceite:**
+          - Deploys são automáticos
+          - Testes rodam antes do deploy
+          - Rollback funciona
+        labels:
+          - "fase-6"
+          - "ci-cd"
+          - "devops"
+        
+      - number: "6.3"
+        title: "Monitoramento e Logs"
+        description: |
+          **Objetivo:** Implementar monitoramento e sistema de logs
+          
+          **Tarefas:**
+          - [ ] Setup de logs centralizados
+          - [ ] Monitoramento de performance (APM)
+          - [ ] Alertas de erro e downtime
+          - [ ] Dashboard de métricas
+          - [ ] Health checks
+          
+          **Entregáveis:**
+          - Sistema de logs funcionando
+          - Monitoramento ativo
+          - Alertas configurados
+          
+          **Critérios de aceite:**
+          - Logs são coletados corretamente
+          - Alertas funcionam
+          - Métricas são visíveis
+        labels:
+          - "fase-6"
+          - "monitoramento"
+          - "observabilidade"
+
+  - number: 8
+    title: "Fase 7: Documentação"
+    description: |
+      Sétima fase focada em criar documentação completa do sistema.
+      
+      **Duração estimada:** Semana 12-13
+      
+      **Dependências:** Todas as fases anteriores
+      
+      **Objetivos principais:**
+      - Documentar API completa
+      - Criar guias de usuário
+      - Documentar código e arquitetura
+    labels:
+      - "fase-7"
+      - "documentação"
+    blocked_by: [4, 5]
+    sub_issues:
+      - number: "7.1"
+        title: "Documentação Técnica"
+        description: |
+          **Objetivo:** Criar documentação técnica completa
+          
+          **Tarefas:**
+          - [ ] Documentação da API (OpenAPI/Swagger)
+          - [ ] Diagramas de arquitetura atualizados
+          - [ ] Documentação de código (JSDoc, etc)
+          - [ ] Guia de contribuição
+          - [ ] Troubleshooting guide
+          
+          **Entregáveis:**
+          - API docs publicada
+          - Diagramas atualizados
+          - Guias para desenvolvedores
+          
+          **Critérios de aceite:**
+          - Documentação está completa e atualizada
+          - Desenvolvedores conseguem entender o sistema
+          - API docs está acessível online
+        labels:
+          - "fase-7"
+          - "documentação"
+          - "técnica"
+        
+      - number: "7.2"
+        title: "Documentação de Usuário"
+        description: |
+          **Objetivo:** Criar guias para usuários finais
+          
+          **Tarefas:**
+          - [ ] Manual do usuário
+          - [ ] FAQs
+          - [ ] Tutoriais em vídeo
+          - [ ] Base de conhecimento
+          - [ ] Onboarding guide
+          
+          **Entregáveis:**
+          - Manual do usuário completo
+          - FAQs publicados
+          - Vídeos tutoriais
+          
+          **Critérios de aceite:**
+          - Documentação é clara e acessível
+          - Cobre todos os principais recursos
+          - Está publicada e acessível
+        labels:
+          - "fase-7"
+          - "documentação"
+          - "usuário"
+
+  - number: 9
+    title: "Fase 8: Lançamento Beta"
+    description: |
+      Oitava fase focada em lançar versão beta e coletar feedback.
+      
+      **Duração estimada:** Semanas 13-15
+      
+      **Dependências:** Todas as fases anteriores devem estar completas
+      
+      **Objetivos principais:**
+      - Lançar versão beta privada
+      - Coletar e analisar feedback
+      - Corrigir bugs críticos
+    labels:
+      - "fase-8"
+      - "beta"
+    blocked_by: [7, 8]
+    sub_issues:
+      - number: "8.1"
+        title: "Preparação para Beta"
+        description: |
+          **Objetivo:** Preparar sistema para lançamento beta
+          
+          **Tarefas:**
+          - [ ] Testes finais completos
+          - [ ] Correção de bugs críticos
+          - [ ] Preparação de ambiente beta
+          - [ ] Seleção de beta testers
+          - [ ] Preparação de materiais de comunicação
+          
+          **Entregáveis:**
+          - Sistema em ambiente beta
+          - Lista de beta testers
+          - Materiais de onboarding
+          
+          **Critérios de aceite:**
+          - Sem bugs críticos
+          - Ambiente beta estável
+          - Beta testers selecionados
+        labels:
+          - "fase-8"
+          - "beta"
+          - "preparação"
+        
+      - number: "8.2"
+        title: "Feedback e Iterações Beta"
+        description: |
+          **Objetivo:** Coletar feedback e fazer melhorias iterativas
+          
+          **Tarefas:**
+          - [ ] Envio de convites para beta
+          - [ ] Coleta estruturada de feedback
+          - [ ] Análise de métricas de uso
+          - [ ] Priorização de melhorias
+          - [ ] Implementação de ajustes críticos
+          
+          **Entregáveis:**
+          - Relatório de feedback
+          - Análise de métricas
+          - Melhorias implementadas
+          
+          **Critérios de aceite:**
+          - Feedback coletado de todos os beta testers
+          - Principais problemas corrigidos
+          - Métricas indicam boa usabilidade
+        labels:
+          - "fase-8"
+          - "beta"
+          - "feedback"
+
+  - number: 10
+    title: "Fase 9: Versionamento e Release"
+    description: |
+      Nona fase focada em preparar o release oficial da v1.0.
+      
+      **Duração estimada:** Semana 15-16
+      
+      **Dependências:** Fase 8 deve estar completa
+      
+      **Objetivos principais:**
+      - Finalizar versão 1.0
+      - Criar plano de release
+      - Executar lançamento oficial
+    labels:
+      - "fase-9"
+      - "release"
+    blocked_by: [9]
+    sub_issues:
+      - number: "9.1"
+        title: "Preparação da Release v1.0"
+        description: |
+          **Objetivo:** Preparar todos os artefatos para release
+          
+          **Tarefas:**
+          - [ ] Versionamento semântico (v1.0.0)
+          - [ ] Changelog completo
+          - [ ] Release notes
+          - [ ] Testes finais de regressão
+          - [ ] Preparação de assets (logos, screenshots)
+          
+          **Entregáveis:**
+          - Versão v1.0.0 tagged
+          - Changelog publicado
+          - Release notes
+          
+          **Critérios de aceite:**
+          - Versão está estável
+          - Documentação está atualizada
+          - Todos os testes passam
+        labels:
+          - "fase-9"
+          - "release"
+          - "v1.0"
+        
+      - number: "9.2"
+        title: "Plano de Marketing e Comunicação"
+        description: |
+          **Objetivo:** Criar estratégia de lançamento e comunicação
+          
+          **Tarefas:**
+          - [ ] Estratégia de lançamento
+          - [ ] Materiais de marketing
+          - [ ] Posts em redes sociais
+          - [ ] Email marketing
+          - [ ] Press release
+          
+          **Entregáveis:**
+          - Plano de lançamento
+          - Materiais de marketing
+          - Calendário de publicações
+          
+          **Critérios de aceite:**
+          - Plano está completo
+          - Materiais estão prontos
+          - Canais de comunicação definidos
+        labels:
+          - "fase-9"
+          - "marketing"
+          - "comunicação"
+        
+      - number: "9.3"
+        title: "Lançamento Oficial"
+        description: |
+          **Objetivo:** Executar lançamento oficial da v1.0
+          
+          **Tarefas:**
+          - [ ] Deploy em produção
+          - [ ] Publicação de anúncios
+          - [ ] Monitoramento intensivo pós-lançamento
+          - [ ] Suporte ativo para primeiros usuários
+          - [ ] Coleta de feedback inicial
+          
+          **Entregáveis:**
+          - Sistema em produção
+          - Anúncios publicados
+          - Relatório de lançamento
+          
+          **Critérios de aceite:**
+          - Deploy bem-sucedido
+          - Sistema estável em produção
+          - Primeiros usuários satisfeitos
+        labels:
+          - "fase-9"
+          - "lançamento"
+          - "produção"
+
+  - number: 11
+    title: "Fase 10: Pós-Lançamento e Melhoria Contínua"
+    description: |
+      Décima fase focada em manutenção e evolução contínua.
+      
+      **Duração estimada:** Contínua (pós-semana 16)
+      
+      **Dependências:** Fase 9 deve estar completa
+      
+      **Objetivos principais:**
+      - Monitorar saúde do sistema
+      - Implementar melhorias baseadas em feedback
+      - Planejar próximas versões
+    labels:
+      - "fase-10"
+      - "pós-lançamento"
+    blocked_by: [10]
+    sub_issues:
+      - number: "10.1"
+        title: "Monitoramento e Manutenção"
+        description: |
+          **Objetivo:** Garantir estabilidade e performance contínuas
+          
+          **Tarefas:**
+          - [ ] Monitoramento contínuo de métricas
+          - [ ] Análise de logs e erros
+          - [ ] Correção de bugs reportados
+          - [ ] Atualizações de segurança
+          - [ ] Otimizações de performance
+          
+          **Entregáveis:**
+          - Dashboard de monitoramento
+          - Relatórios semanais de saúde
+          - Bugs corrigidos
+          
+          **Critérios de aceite:**
+          - Sistema mantém uptime > 99%
+          - Bugs são corrigidos em tempo hábil
+          - Performance se mantém adequada
+        labels:
+          - "fase-10"
+          - "manutenção"
+          - "suporte"
+        
+      - number: "10.2"
+        title: "Roadmap e Evolução"
+        description: |
+          **Objetivo:** Planejar próximas versões e funcionalidades
+          
+          **Tarefas:**
+          - [ ] Análise de feedback dos usuários
+          - [ ] Priorização de novas features
+          - [ ] Roadmap de produto
+          - [ ] Planejamento de versões futuras (v1.1, v2.0)
+          - [ ] Comunicação do roadmap
+          
+          **Entregáveis:**
+          - Roadmap de produto
+          - Backlog priorizado
+          - Planejamento de sprints futuros
+          
+          **Critérios de aceite:**
+          - Roadmap está definido e comunicado
+          - Próximas versões estão planejadas
+          - Feedback está sendo incorporado
+        labels:
+          - "fase-10"
+          - "roadmap"
+          - "evolução"
+
+# Issues Especiais
+special_issues:
+  - number: 12
+    title: "Stack Tecnológica - PlenoPsi MVP"
+    description: |
+      # Stack Tecnológica Completa - PlenoPsi
+      
+      Esta issue documenta todas as tecnologias escolhidas para o desenvolvimento do MVP.
+      
+      ## 🎨 Frontend
+      
+      ### Framework Principal
+      - **Next.js 14+** - Framework React com SSR e SSG
+        - Razão: Performance, SEO, experiência de desenvolvimento
+      - **React 18+** - Biblioteca UI
+      - **TypeScript** - Tipagem estática
+      
+      ### UI/Styling
+      - **Tailwind CSS** - Framework CSS utility-first
+      - **shadcn/ui** - Componentes reutilizáveis
+      - **Radix UI** - Primitivos de UI acessíveis
+      - **Lucide React** - Ícones
+      
+      ### Estado e Dados
+      - **Zustand** - Gerenciamento de estado global
+      - **React Query (TanStack Query)** - Cache e sincronização de dados
+      - **Zod** - Validação de schemas
+      
+      ### Formulários
+      - **React Hook Form** - Gestão de formulários
+      - **Zod** - Validação
+      
+      ### Gráficos e Visualizações
+      - **Recharts** ou **Chart.js** - Gráficos financeiros
+      
+      ## 🔧 Backend
+      
+      ### Framework Principal
+      - **Node.js 20 LTS** - Runtime
+      - **Express.js** ou **Fastify** - Framework web
+      - **TypeScript** - Tipagem estática
+      
+      ### Banco de Dados
+      - **PostgreSQL 15+** - Banco de dados principal
+      - **Prisma** - ORM e migrations
+      - **Redis** - Cache e sessões
+      
+      ### Autenticação
+      - **JWT** - Tokens de autenticação
+      - **bcrypt** - Hash de senhas
+      - **Passport.js** - Estratégias de autenticação
+      
+      ### Validação e Segurança
+      - **Zod** - Validação de schemas
+      - **Helmet** - Headers de segurança
+      - **CORS** - Cross-origin resource sharing
+      - **Rate Limiting** - Proteção contra ataques
+      
+      ## 📦 DevOps e Infraestrutura
+      
+      ### Hospedagem
+      - **Hostinger VPS** - Servidor principal
+      - **Domínio**: plenopsi.com.br
+      
+      ### CI/CD
+      - **GitHub Actions** - Pipeline de CI/CD
+      - **Docker** - Containerização
+      - **Docker Compose** - Orquestração local
+      
+      ### Monitoramento
+      - **PM2** - Process manager
+      - **Winston** ou **Pino** - Logs
+      - **Sentry** - Error tracking
+      - **Uptime Kuma** - Monitoramento de uptime
+      
+      ### Proxy e SSL
+      - **Nginx** - Reverse proxy
+      - **Let's Encrypt** - Certificados SSL
+      
+      ## 🧪 Testes
+      
+      ### Frontend
+      - **Vitest** - Unit tests
+      - **Testing Library** - Component tests
+      - **Playwright** - E2E tests
+      
+      ### Backend
+      - **Jest** - Unit e integration tests
+      - **Supertest** - API tests
+      
+      ## 📚 Documentação
+      
+      - **Swagger/OpenAPI** - Documentação de API
+      - **Storybook** - Documentação de componentes
+      - **JSDoc** - Documentação de código
+      
+      ## 🔄 Versionamento
+      
+      - **Git** - Controle de versão
+      - **GitHub** - Repositório
+      - **Conventional Commits** - Padrão de commits
+      - **Semantic Versioning** - Versionamento
+      
+      ## 📧 Comunicação
+      
+      - **Nodemailer** - Envio de emails
+      - **SendGrid** ou **Resend** - Serviço de email
+      
+      ## 📅 Integrações Futuras
+      
+      - **Google Calendar API** - Sincronização de agenda
+      - **WhatsApp Business API** - Notificações
+      - **Stripe/PayPal** - Pagamentos online
+      
+      ---
+      
+      ## 📋 Justificativas
+      
+      ### Por que Next.js?
+      - SEO otimizado (importante para landing pages)
+      - Performance superior com SSR/SSG
+      - Excelente DX (Developer Experience)
+      - Grande comunidade e suporte
+      
+      ### Por que PostgreSQL?
+      - Confiável e robusto
+      - Suporte a JSON para dados semi-estruturados
+      - Excelente para dados relacionais
+      - Bom suporte a full-text search
+      
+      ### Por que Hostinger VPS?
+      - Custo-benefício
+      - Controle total do ambiente
+      - Suporte em português
+      - Escalabilidade conforme necessário
+      
+      ---
+      
+      **Status:** ✅ Aprovado  
+      **Última atualização:** 2026-02-07
+    labels:
+      - "documentação"
+      - "stack"
+      - "arquitetura"
+    
+  - number: 13
+    title: "Estrutura de Versionamento - PlenoPsi"
+    description: |
+      # Estrutura de Versionamento - PlenoPsi
+      
+      Este documento define as estratégias e convenções de versionamento para o projeto PlenoPsi.
+      
+      ## 📌 Semantic Versioning (SemVer)
+      
+      Utilizaremos **Semantic Versioning 2.0.0** para todas as releases.
+      
+      ### Formato: MAJOR.MINOR.PATCH
+      
+      ```
+      v1.2.3
+      │ │ │
+      │ │ └─ PATCH: Bug fixes e correções
+      │ └─── MINOR: Novas features (backward compatible)
+      └───── MAJOR: Breaking changes
+      ```
+      
+      ### Exemplos
+      - `v1.0.0` - Release inicial (MVP)
+      - `v1.1.0` - Nova feature: integração com Google Calendar
+      - `v1.1.1` - Correção de bug no agendamento
+      - `v2.0.0` - Mudança arquitetural significativa (breaking change)
+      
+      ## 🌿 Estratégia de Branches
+      
+      ### Branch Principal
+      - **`main`** - Código em produção, sempre estável
+        - Protegida, requer pull requests
+        - Deploy automático para produção
+      
+      ### Branches de Desenvolvimento
+      - **`develop`** - Branch de integração para desenvolvimento
+        - Código testado mas não em produção
+        - Deploy automático para staging
+      
+      ### Branches de Feature
+      - **`feature/<nome>`** - Desenvolvimento de novas funcionalidades
+        - Exemplo: `feature/google-calendar-integration`
+        - Base: `develop`
+        - Merge para: `develop`
+      
+      ### Branches de Correção
+      - **`fix/<nome>`** - Correção de bugs
+        - Exemplo: `fix/appointment-conflict`
+        - Base: `develop` (ou `main` se hotfix)
+        - Merge para: `develop`
+      
+      ### Branches de Hotfix
+      - **`hotfix/<versão>`** - Correções urgentes em produção
+        - Exemplo: `hotfix/v1.0.1`
+        - Base: `main`
+        - Merge para: `main` E `develop`
+      
+      ### Branches de Release
+      - **`release/<versão>`** - Preparação de releases
+        - Exemplo: `release/v1.1.0`
+        - Base: `develop`
+        - Merge para: `main` e `develop`
+      
+      ## 📝 Conventional Commits
+      
+      Utilizaremos **Conventional Commits** para mensagens de commit padronizadas.
+      
+      ### Formato
+      ```
+      <type>(<scope>): <subject>
+      
+      <body>
+      
+      <footer>
+      ```
+      
+      ### Types
+      - `feat`: Nova funcionalidade
+      - `fix`: Correção de bug
+      - `docs`: Documentação
+      - `style`: Formatação (não afeta código)
+      - `refactor`: Refatoração
+      - `test`: Testes
+      - `chore`: Manutenção/ferramentas
+      - `perf`: Performance
+      - `ci`: CI/CD
+      
+      ### Exemplos
+      ```bash
+      feat(agenda): add Google Calendar sync
+      fix(auth): resolve JWT expiration bug
+      docs(api): update authentication endpoints
+      test(pacientes): add unit tests for CRUD
+      chore(deps): upgrade Next.js to v14
+      ```
+      
+      ### Breaking Changes
+      ```bash
+      feat(api)!: change authentication to OAuth2
+      
+      BREAKING CHANGE: JWT authentication removed in favor of OAuth2
+      ```
+      
+      ## 🏷️ Tags e Releases
+      
+      ### Criação de Tags
+      - Tags são criadas na branch `main` após merge de release
+      - Formato: `vMAJOR.MINOR.PATCH`
+      - Exemplo: `v1.0.0`, `v1.1.0`, `v2.0.0`
+      
+      ### Processo de Release
+      
+      1. **Criar branch de release**
+         ```bash
+         git checkout develop
+         git checkout -b release/v1.1.0
+         ```
+      
+      2. **Atualizar versão**
+         - Atualizar `package.json`
+         - Atualizar `CHANGELOG.md`
+         - Atualizar documentação
+      
+      3. **Testes finais**
+         - Rodar todos os testes
+         - Verificar builds
+         - Testar em staging
+      
+      4. **Merge para main**
+         ```bash
+         git checkout main
+         git merge release/v1.1.0
+         git tag -a v1.1.0 -m "Release v1.1.0"
+         git push origin main --tags
+         ```
+      
+      5. **Merge de volta para develop**
+         ```bash
+         git checkout develop
+         git merge release/v1.1.0
+         git push origin develop
+         ```
+      
+      6. **Deletar branch de release**
+         ```bash
+         git branch -d release/v1.1.0
+         ```
+      
+      ## 📋 CHANGELOG.md
+      
+      Manteremos um `CHANGELOG.md` seguindo o formato **Keep a Changelog**.
+      
+      ### Estrutura
+      ```markdown
+      # Changelog
+      
+      ## [Unreleased]
+      ### Added
+      - Nova feature em desenvolvimento
+      
+      ## [1.1.0] - 2026-03-15
+      ### Added
+      - Integração com Google Calendar
+      - Export de relatórios em PDF
+      
+      ### Fixed
+      - Correção de conflito de agendamentos
+      
+      ## [1.0.0] - 2026-02-20
+      ### Added
+      - Release inicial do MVP
+      - Gestão de pacientes
+      - Agendamento de consultas
+      - Controle financeiro
+      ```
+      
+      ## 🔄 Fluxo de Trabalho (Git Flow)
+      
+      ```
+      main     ─●────────●────────●─────→ (v1.0.0) (v1.1.0) (v2.0.0)
+                │        │        │
+                │   release/v1.1.0│
+                │        │        │
+      develop  ─●────●───●────●───●──●──→
+                │    │        │      │
+                └─feature/    └─fix/ └─feature/
+                  calendario   bug    pagamentos
+      ```
+      
+      ## 🚀 CI/CD e Deploys
+      
+      ### Automação
+      - **Push em `develop`** → Deploy em staging
+      - **Tag em `main`** → Deploy em produção
+      - **Pull Request** → Testes automatizados
+      
+      ### Ambientes
+      - **Development**: Local (http://localhost:3000)
+      - **Staging**: staging.plenopsi.com.br
+      - **Production**: plenopsi.com.br
+      
+      ## 📊 Versionamento de API
+      
+      ### URL Versionada
+      - `/api/v1/pacientes`
+      - `/api/v1/agendamentos`
+      - `/api/v2/pacientes` (quando houver breaking change)
+      
+      ### Headers
+      ```
+      Accept: application/vnd.plenopsi.v1+json
+      ```
+      
+      ## 🔐 Versionamento de Banco de Dados
+      
+      - **Migrations**: Versionadas e sequenciais
+      - **Rollback**: Sempre possível
+      - **Naming**: `YYYYMMDDHHMMSS_description.sql`
+      
+      Exemplo: `20260207120000_create_pacientes_table.sql`
+      
+      ---
+      
+      **Status:** ✅ Aprovado  
+      **Última atualização:** 2026-02-07
+    labels:
+      - "documentação"
+      - "versionamento"
+      - "processo"
