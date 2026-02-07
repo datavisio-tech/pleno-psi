@@ -57,6 +57,27 @@ o cuidado com seus pacientes. A aplicação busca trazer **plenitude e equilíbr
 
 ---
 
+## 📋 Planejamento e Issues
+
+Este projeto segue um planejamento estruturado em 10 fases para o desenvolvimento do MVP.
+
+📖 **[Ver estrutura completa de issues →](INDEX.md)**
+
+A estrutura inclui:
+- 10 fases principais (Planejamento → Pós-Lançamento)
+- 28 sub-issues detalhadas
+- 2 issues especiais (Stack Tecnológica + Versionamento)
+- Sistema completo de labels e dependências
+
+Para criar todas as issues automaticamente:
+```bash
+./create_all_issues.sh
+```
+
+Ou consulte o [Guia Rápido](QUICK_START.md) para mais detalhes.
+
+---
+
 ## 📄 Licença
 
 Este projeto está sob a licença MIT.  
