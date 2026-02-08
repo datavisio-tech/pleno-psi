@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PlenoPsi - Gestão para Psicólogos",
+  title: "PlenoPsi - Gestão Clinica",
   description:
-    "Plataforma completa para profissionais de psicologia: agendamento, financeiro e gestão de consultório.",
+    "Plataforma completa para profissionais de saúde: agendamento, financeiro e gestão de consultório.",
   keywords: ["psicologia", "gestão", "consultório", "agendamento", "PlenoPsi"],
 };
 

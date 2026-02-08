@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "db:test": "node scripts/test-connection.js",
+    "db:migrate": "node scripts/migrate.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "next": "16.1.6",
+    "pg": "^8.18.0",
+    "dotenv": "^16.1.4",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
