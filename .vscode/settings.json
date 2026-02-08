@@ -1,0 +1,36 @@
+{
+  // =========================
+  // Editor behavior
+  // =========================
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // =========================
+  // ESLint auto-fix on save
+  // =========================
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // =========================
+  // ESLint validation
+  // =========================
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // =========================
+  // Prettier integration
+  // =========================
+  "prettier.requireConfig": true,
+
+  // =========================
+  // Tailwind IntelliSense
+  // =========================
+  "tailwindCSS.experimental.classRegex": [
+    ["className\\s*=\\s*\"([^\"]*)\"", "([^\"]*)"]
+  ]
+}

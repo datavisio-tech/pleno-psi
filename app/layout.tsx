@@ -1,6 +1,7 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PlenoPsi - Gestão para Psicólogos",
+  title: "PlenoPsi - Gestão Clinica",
   description:
-    "Plataforma completa para profissionais de psicologia: agendamento, financeiro e gestão de consultório.",
+    "Plataforma completa para profissionais de saúde: agendamento, financeiro e gestão de consultório.",
   keywords: ["psicologia", "gestão", "consultório", "agendamento", "PlenoPsi"],
 };
 
