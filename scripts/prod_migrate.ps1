@@ -24,17 +24,16 @@ param(
 
 # If parameters were not provided, fall back to environment variables, then sensible defaults
 if (-not $Host) { $Host = $env:POSTGRES_HOST }
-if (-not $Host) { $Host = '72.60.143.197' }
+
 
 if (-not $Port) {
   if ($env:POSTGRES_PORT) { $Port = [int]$env:POSTGRES_PORT } else { $Port = 5432 }
 }
 
 if (-not $Database) { $Database = $env:POSTGRES_DB }
-if (-not $Database) { $Database = 'datavisio' }
+if (-not $Database) { $Database = 'plenopsi' }
 
 if (-not $User) { $User = $env:POSTGRES_USER }
-if (-not $User) { $User = 'postgres' }
 
 function Fail([string]$msg) {
   Write-Error $msg

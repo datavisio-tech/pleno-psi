@@ -9,13 +9,15 @@ issuee_tree.md
 CHANGELOG_AGENT.md
 create_all_issues.sh
 create_issues.py
+prod_migrate.ps1
 
 # Node / Python common ignores (preservar se já existir no repositório)
 node_modules/
 __pycache__/
 *.pyc
 .env
-.venv
+src/
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
