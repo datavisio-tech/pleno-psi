@@ -1,1 +1,0 @@
-//criar tabelas para migrations
