@@ -22,6 +22,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { loginMock } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export const loginSchema = z
@@ -64,53 +65,78 @@ export function LoginForm({
   const [authError, setAuthError] = React.useState<string | null>(null);
 
   async function onSubmitInternal(data: LoginFormData) {
-    console.log("[Login] Submit iniciado", data.email);
-    let success = false;
+    console.log("[Login] Submit iniciado:", data.email);
+
     setAuthError(null);
+    setLoading(true);
+
+    let success = false; // ✅ controle correto do fluxo
+
     try {
-      setLoading(true);
       console.log("[Login] Loading ativado");
 
       if (onSubmit) {
         console.log("[Login] Executando callback onSubmit");
+
+        // 🔌 AQUI você chamaria a API REAL (ex: Auth.js, backend próprio)
+        // const response = await onSubmit(data);
+
         await Promise.resolve(onSubmit(data));
-        console.log("[Login] Callback onSubmit finalizado");
+
+        success = true;
+        console.log("[Login] Login real bem-sucedido");
       } else {
-        console.log("[Login] Nenhum onSubmit fornecido, simulando login...");
-        await new Promise((r) => setTimeout(r, 400));
-        console.log("[Login] Simulação de login concluída");
+        console.warn("[Login] Nenhum onSubmit fornecido — usando loginMock...");
+
+        const res = await loginMock({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (!res.ok) {
+          // lança um erro similar ao anterior para ser capturado
+          const err: any = new Error(res.error || "Erro no login");
+          if ((res as any).fieldErrors)
+            err.fieldErrors = (res as any).fieldErrors;
+          throw err;
+        }
+
+        console.log("[Login] Login simulado OK:", res.user);
+        success = true;
       }
-
-      success = true;
     } catch (error: any) {
-      console.error("[Login] Erro durante o processo de login:", error);
+      console.error("[Login] Erro no login:", error);
 
-      // Tenta extrair uma mensagem amigável
       const message =
-        (error && (error.message || error.error || error.detail)) ||
+        error?.message ||
+        error?.error ||
+        error?.detail ||
         "Erro no login. Verifique suas credenciais.";
 
-      // Se o servidor retornar erros por campo, aplica via setError
-      if (error && typeof error === "object" && error.fieldErrors) {
-        try {
-          Object.entries(error.fieldErrors).forEach(([field, msg]) => {
-            // @ts-ignore
-            setError(field as any, { type: "server", message: String(msg) });
-          });
-        } catch (e) {
-          console.warn("Não foi possível mapear fieldErrors:", e);
-        }
+      setAuthError(message);
+
+      // 🧩 Se a API retornar erros por campo
+      if (error?.fieldErrors) {
+        Object.entries(error.fieldErrors).forEach(([field, msg]) => {
+          // @ts-ignore
+          setError(field, { type: "server", message: String(msg) });
+        });
       }
 
-      setAuthError(String(message));
+      success = false;
     } finally {
       setLoading(false);
       console.log("[Login] Loading desativado");
       console.log("[Login] Submit finalizado");
     }
 
+    // 🚦 DECISÃO FINAL
     if (success) {
+      console.log("[Login] Redirecionando para /");
       router.push("/");
+    } else {
+      console.log("[Login] Login falhou — permanecendo na página");
+      alert(authError || "Login falhou. Verifique suas credenciais.");
     }
   }
 
