@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,8 +23,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-import { useRouter } from "next/navigation";
 
 export const loginSchema = z
   .object({
@@ -59,11 +58,15 @@ export function LoginForm({
     register,
     handleSubmit: rhfHandleSubmit,
     formState: { errors },
+    setError,
   } = form;
+
+  const [authError, setAuthError] = React.useState<string | null>(null);
 
   async function onSubmitInternal(data: LoginFormData) {
     console.log("[Login] Submit iniciado", data.email);
-
+    let success = false;
+    setAuthError(null);
     try {
       setLoading(true);
       console.log("[Login] Loading ativado");
@@ -77,13 +80,36 @@ export function LoginForm({
         await new Promise((r) => setTimeout(r, 400));
         console.log("[Login] Simulação de login concluída");
       }
-    } catch (error) {
+
+      success = true;
+    } catch (error: any) {
       console.error("[Login] Erro durante o processo de login:", error);
-      throw error; // opcional
+
+      // Tenta extrair uma mensagem amigável
+      const message =
+        (error && (error.message || error.error || error.detail)) ||
+        "Erro no login. Verifique suas credenciais.";
+
+      // Se o servidor retornar erros por campo, aplica via setError
+      if (error && typeof error === "object" && error.fieldErrors) {
+        try {
+          Object.entries(error.fieldErrors).forEach(([field, msg]) => {
+            // @ts-ignore
+            setError(field as any, { type: "server", message: String(msg) });
+          });
+        } catch (e) {
+          console.warn("Não foi possível mapear fieldErrors:", e);
+        }
+      }
+
+      setAuthError(String(message));
     } finally {
       setLoading(false);
       console.log("[Login] Loading desativado");
       console.log("[Login] Submit finalizado");
+    }
+
+    if (success) {
       router.push("/");
     }
   }
