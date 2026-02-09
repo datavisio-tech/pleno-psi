@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,8 +20,38 @@ import { cn } from "@/lib/utils";
 
 export function LoginForm({
   className,
+  onSubmit,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<"div"> & {
+  onSubmit?: (data: {
+    email?: string;
+    password?: string;
+  }) => void | Promise<void>;
+}) {
+  const [loading, setLoading] = React.useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+    const data = {
+      email: String(fd.get("email") || "").trim(),
+      password: String(fd.get("password") || ""),
+    };
+
+    try {
+      setLoading(true);
+      if (onSubmit) {
+        await Promise.resolve(onSubmit(data));
+      } else {
+        // fallback: quick no-op delay to show loading state
+        await new Promise((r) => setTimeout(r, 400));
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -30,7 +62,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
                 <Button variant="outline" type="button">
@@ -90,7 +122,9 @@ export function LoginForm({
                 <Input id="password" type="password" required />
               </Field>
               <Field>
-                <Button type="submit">Entrar</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? "Entrando..." : "Entrar"}
+                </Button>
                 <FieldDescription className="text-center">
                   Não possui uma conta? <a href="/auth/register">Cadastre-se</a>
                 </FieldDescription>
