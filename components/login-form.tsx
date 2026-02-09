@@ -22,7 +22,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { loginMock } from "@/lib/auth";
+import { login } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export const loginSchema = z
@@ -88,7 +88,7 @@ export function LoginForm({
       } else {
         console.warn("[Login] Nenhum onSubmit fornecido — usando loginMock...");
 
-        const res = await loginMock({
+        const res = await login({
           email: data.email,
           password: data.password,
         });
