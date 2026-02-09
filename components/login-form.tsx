@@ -94,11 +94,20 @@ export function LoginForm({
         });
 
         if (!res.ok) {
-          // lança um erro similar ao anterior para ser capturado
-          const err: any = new Error(res.error || "Erro no login");
-          if ((res as any).fieldErrors)
-            err.fieldErrors = (res as any).fieldErrors;
-          throw err;
+          // Não lançar — tratar localmente para evitar stack trace no console.
+          const message = res.error || "Erro no login";
+
+          // Aplica erros por campo quando presentes
+          if ((res as any).fieldErrors) {
+            Object.entries((res as any).fieldErrors).forEach(([field, msg]) => {
+              // @ts-ignore
+              setError(field, { type: "server", message: String(msg) });
+            });
+          }
+
+          setAuthError(message);
+          success = false;
+          return;
         }
 
         console.log("[Login] Login simulado OK:", res.user);
