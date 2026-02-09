@@ -82,7 +82,7 @@ Resumo das ações realizadas automaticamente pelo agente:
 ### **Atualizações adicionais (07/02/2026)**
 
 - Removi hardcodes de configuração sensível e movi valores para `.env` (ex.: `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`). O repositório ignora `.env` via `.gitignore`.
-- Adicionei runner de migrations em `scripts/migrate.js`, scripts auxiliares `scripts/test-connection.js`, `scripts/prod_migrate.sh`, `scripts/prod_migrate.ps1` e a migration inicial `migrations/001_initial.sql`.
+- Adicionei runner de migrations em `scripts/migrate.js`, scripts auxiliares `scripts/test-connection.js`, `scripts/prod_migrate.sh`, `scripts/prod_migrate.ps1` e a migration inicial `src/migrations/001_initial.sql`.
 - Executei migrações e criei a base `plenopsi` no servidor PostgreSQL remoto quando necessário; a migration inicial `001_initial.sql` foi aplicada.
 - Comitei e pushiei as alterações na branch `feature/setup` e criei a tag anotada `v0.1.0-feature-setup-secure` para versionamento desta feature.
 - Recomendações: se `.env` já tiver sido commitado previamente em qualquer histórico remoto, rotacionar credenciais e, se desejar, posso purgar o arquivo do histórico com BFG/git-filter-repo (requer confirmação).

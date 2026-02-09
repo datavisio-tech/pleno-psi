@@ -39,5 +39,5 @@ npm run db:migrate
 Observações:
 
 - O runner registra migrations aplicadas na tabela `migrations`.
-- A migração inicial `migrations/001_initial.sql` ativa a extensão `pgcrypto` (usa `gen_random_uuid()`), cria tabelas, constraints, índices e a tabela `migrations`.
+- A migração inicial `src/migrations/001_initial.sql` ativa a extensão `pgcrypto` (usa `gen_random_uuid()`), cria tabelas, constraints, índices e a tabela `migrations`.
 - Ajuste permissões e parâmetros de acordo com seu ambiente de produção.
