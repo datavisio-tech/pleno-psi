@@ -23,6 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+import { useRouter } from "next/navigation";
+
 export const loginSchema = z
   .object({
     email: z
@@ -46,6 +48,8 @@ export function LoginForm({
 }) {
   const [loading, setLoading] = React.useState(false);
 
+  const router = useRouter();
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -58,17 +62,29 @@ export function LoginForm({
   } = form;
 
   async function onSubmitInternal(data: LoginFormData) {
-    console.log("Login DATA:", data); // <-- Aqui você pode acessar os valores do formulário
+    console.log("[Login] Submit iniciado", data.email);
+
     try {
       setLoading(true);
+      console.log("[Login] Loading ativado");
+
       if (onSubmit) {
+        console.log("[Login] Executando callback onSubmit");
         await Promise.resolve(onSubmit(data));
+        console.log("[Login] Callback onSubmit finalizado");
       } else {
+        console.log("[Login] Nenhum onSubmit fornecido, simulando login...");
         await new Promise((r) => setTimeout(r, 400));
+        console.log("[Login] Simulação de login concluída");
       }
+    } catch (error) {
+      console.error("[Login] Erro durante o processo de login:", error);
+      throw error; // opcional
     } finally {
       setLoading(false);
-      console.log("Login2 DATA:", data); // <-- Aqui você pode acessar os valores do formulário
+      console.log("[Login] Loading desativado");
+      console.log("[Login] Submit finalizado");
+      router.push("/");
     }
   }
 
