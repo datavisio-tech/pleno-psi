@@ -1,6 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,37 +23,52 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+export const loginSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, { message: "O e-mail é obrigatório" })
+      .email({ message: "E-mail inválido" }),
+    password: z.string().min(8, {
+      message: "A senha deve ter pelo menos 8 caracteres",
+    }),
+  })
+  .required();
+
+export type LoginFormData = z.infer<typeof loginSchema>;
+
 export function LoginForm({
   className,
   onSubmit,
   ...props
 }: React.ComponentProps<"div"> & {
-  onSubmit?: (data: {
-    email?: string;
-    password?: string;
-  }) => void | Promise<void>;
+  onSubmit?: (data: LoginFormData) => void | Promise<void>;
 }) {
   const [loading, setLoading] = React.useState(false);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-    const data = {
-      email: String(fd.get("email") || "").trim(),
-      password: String(fd.get("password") || ""),
-    };
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
+  const {
+    register,
+    handleSubmit: rhfHandleSubmit,
+    formState: { errors },
+  } = form;
+
+  async function onSubmitInternal(data: LoginFormData) {
+    console.log("Login DATA:", data); // <-- Aqui você pode acessar os valores do formulário
     try {
       setLoading(true);
       if (onSubmit) {
         await Promise.resolve(onSubmit(data));
       } else {
-        // fallback: quick no-op delay to show loading state
         await new Promise((r) => setTimeout(r, 400));
       }
     } finally {
       setLoading(false);
+      console.log("Login2 DATA:", data); // <-- Aqui você pode acessar os valores do formulário
     }
   }
 
@@ -64,7 +82,7 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={rhfHandleSubmit(onSubmitInternal)}>
             <FieldGroup>
               <Field>
                 <Button variant="outline" type="button">
@@ -106,10 +124,14 @@ export function LoginForm({
                 <FieldLabel htmlFor="email">E-mail</FieldLabel>
                 <Input
                   id="email"
-                  type="email"
+                  {...register("email")}
                   placeholder="meu@email.com"
-                  required
                 />
+                {errors.email && (
+                  <FieldDescription className="text-destructive">
+                    {errors.email.message}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -121,7 +143,16 @@ export function LoginForm({
                     Esqueceu sua senha?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  {...register("password")}
+                  type="password"
+                />
+                {errors.password && (
+                  <FieldDescription className="text-destructive">
+                    {errors.password.message}
+                  </FieldDescription>
+                )}
               </Field>
               <Field>
                 <Button type="submit" disabled={loading}>
