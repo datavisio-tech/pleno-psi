@@ -16,6 +16,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
+import { registerMock } from "@/lib/auth";
 import Image from "next/image";
 
 /// ----------------------------------------------------------------
@@ -57,7 +58,7 @@ export function RegisterForm() {
   });
 
   function onSubmit(data: RegisterUserFormData) {
-    console.log("FORM DATA:", data);
+    console.log("signup DATA:", data); // <-- Aqui você pode acessar os valores do formulário);
   }
 
   return <SignupForm form={form} onSubmit={onSubmit} />;
@@ -81,7 +82,60 @@ export function SignupForm({
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = form;
+
+  const [loading, setLoading] = React.useState(false);
+  const [authError, setAuthError] = React.useState<string | null>(null);
+
+  async function onSubmitInternal(data: RegisterUserFormData) {
+    setAuthError(null);
+    setLoading(true);
+    let success = false;
+    try {
+      if (onSubmit) {
+        await Promise.resolve(onSubmit(data));
+        success = true;
+      } else {
+        const res = await registerMock({
+          email: data.email,
+          password: data.password,
+        });
+        if (!res.ok) {
+          if ((res as any).fieldErrors) {
+            Object.entries((res as any).fieldErrors).forEach(([field, msg]) => {
+              // @ts-ignore
+              setError(field, { type: "server", message: String(msg) });
+            });
+          }
+          setAuthError(res.error || "Erro no registro");
+          return;
+        }
+        success = true;
+      }
+    } catch (error: any) {
+      const message = error?.message || "Erro no registro";
+      setAuthError(String(message));
+    } finally {
+      setLoading(false);
+    }
+
+    if (success) {
+      // opcional: você pode redirecionar aqui ou exibir uma mensagem de sucesso
+      console.log("Registro bem-sucedido", data.email);
+    }
+  }
+
+  const [loading, setLoading] = React.useState(false);
+
+  async function handleFormSubmit(data: RegisterUserFormData) {
+    try {
+      setLoading(true);
+      await Promise.resolve(onSubmit(data));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -97,7 +151,7 @@ export function SignupForm({
           </div>
           <form
             className="p-6 md:p-8"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmitInternal)}
             noValidate
           >
             <FieldGroup>
@@ -158,9 +212,14 @@ export function SignupForm({
 
               {/* SUBMIT */}
               <Field>
-                <Button type="submit" className="w-full">
-                  Criar Conta
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Enviando..." : "Criar Conta"}
                 </Button>
+                {authError && (
+                  <FieldDescription className="text-destructive mt-2 text-center">
+                    {authError}
+                  </FieldDescription>
+                )}
               </Field>
 
               <FieldSeparator>Ou continue com</FieldSeparator>
