@@ -1,0 +1,245 @@
+"use client";
+
+import React from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+
+// Schema for address
+const addressSchema = z.object({
+  zip_code: z.string().min(1, "CEP é obrigatório"),
+  street: z.string().min(1, "Logradouro é obrigatório"),
+  number: z.string().min(1, "Número é obrigatório"),
+  neighborhood: z.string().optional(),
+  city: z.string().min(1, "Cidade é obrigatória"),
+  state: z.string().min(1, "Estado é obrigatório"),
+  country: z.string().min(1, "País é obrigatório"),
+});
+
+const guardianSchema = z.object({
+  full_name: z.string().min(3, "Nome completo é obrigatório"),
+  cpf: z.string().min(11, "CPF inválido"),
+  phone: z.string().min(8, "Telefone inválido"),
+  email: z.string().email("Email inválido"),
+});
+
+type AddressForm = z.infer<typeof addressSchema>;
+type GuardianForm = z.infer<typeof guardianSchema>;
+
+export default function CadastroAddressPage() {
+  const router = useRouter();
+
+  const addressForm = useForm<AddressForm>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: {
+      zip_code: "",
+      street: "",
+      number: "",
+      neighborhood: "",
+      city: "",
+      state: "",
+      country: "",
+    },
+  });
+
+  const guardianForm = useForm<GuardianForm>({
+    resolver: zodResolver(guardianSchema),
+    defaultValues: {
+      full_name: "",
+      cpf: "",
+      phone: "",
+      email: "",
+    },
+  });
+
+  const [patientIsResponsible, setPatientIsResponsible] = React.useState<boolean | null>(null);
+  const [isMinor, setIsMinor] = React.useState(false);
+  const [loadingProfile, setLoadingProfile] = React.useState(true);
+
+  // On mount, fetch profile to determine birth_date and prefill guardian when needed
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/profile");
+        if (!res.ok) return;
+        const j = await res.json().catch(() => null);
+        if (j?.success && j.person) {
+          const p = j.person;
+          if (p.birth_date) {
+            const birth = new Date(p.birth_date);
+            const age = Math.floor((Date.now() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+            setIsMinor(age < 18);
+          }
+          // default patient is self-responsible
+          setPatientIsResponsible(true);
+        }
+      } catch (e) {
+        // ignore
+      } finally {
+        setLoadingProfile(false);
+      }
+    })();
+  }, []);
+
+  function handleSkip() {
+    // Skipping for now — in real flow, persist progress and allow later completion
+    router.replace("/");
+  }
+
+  function handleContinue() {
+    // Validate address and guardian (if shown/required)
+    const okAddress = addressForm.trigger();
+    Promise.resolve(okAddress).then((addrValid) => {
+      if (!addrValid) return;
+
+      if (isMinor) {
+        // guardian required
+        if (patientIsResponsible) {
+          // populate guardian with patient data (would use profile data)
+          // TODO: persist address and guardian as needed
+          router.replace("/");
+        } else {
+          guardianForm.trigger().then((gValid) => {
+            if (!gValid) return;
+            // TODO: persist address and guardian
+            router.replace("/");
+          });
+        }
+      } else {
+        // adult: guardian optional
+        if (patientIsResponsible || patientIsResponsible === null) {
+          // continue
+          // TODO: persist address
+          router.replace("/");
+        } else {
+          guardianForm.trigger().then((gValid) => {
+            if (!gValid) return;
+            // TODO: persist address and guardian
+            router.replace("/");
+          });
+        }
+      }
+    });
+  }
+
+  return (
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="flex w-full max-w-md flex-col gap-6">
+        <Card>
+          <CardContent>
+            <Form {...addressForm}>
+              <form onSubmit={(e) => e.preventDefault()}>
+                <FieldGroup>
+                  <h2 className="text-xl font-semibold">Endereço</h2>
+                  <Field>
+                    <FieldLabel>CEP</FieldLabel>
+                    <Input {...addressForm.register("zip_code")} />
+                    <FormMessage />
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Logradouro</FieldLabel>
+                    <Input {...addressForm.register("street")} />
+                  </Field>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                      <FieldLabel>Número</FieldLabel>
+                      <Input {...addressForm.register("number")} />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Bairro</FieldLabel>
+                      <Input {...addressForm.register("neighborhood")} />
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                      <FieldLabel>Cidade</FieldLabel>
+                      <Input {...addressForm.register("city")} />
+                    </Field>
+                    <Field>
+                      <FieldLabel>Estado</FieldLabel>
+                      <Input {...addressForm.register("state")} />
+                    </Field>
+                  </div>
+
+                  <Field>
+                    <FieldLabel>País</FieldLabel>
+                    <Input {...addressForm.register("country")} />
+                  </Field>
+
+                  <FieldSeparator />
+
+                  <h3 className="text-lg font-medium">Responsável legal</h3>
+                  <Field>
+                    <FieldLabel>O paciente é o próprio responsável legal?</FieldLabel>
+                    <div className="flex gap-4 mt-2">
+                      <Button type="button" variant={patientIsResponsible ? undefined : "ghost"} onClick={() => setPatientIsResponsible(true)}>
+                        Sim
+                      </Button>
+                      <Button type="button" variant={patientIsResponsible === false ? undefined : "ghost"} onClick={() => setPatientIsResponsible(false)}>
+                        Não
+                      </Button>
+                    </div>
+                  </Field>
+
+                  {patientIsResponsible === false && (
+                    <>
+                      <FieldSeparator />
+                      <h4 className="text-md font-medium">Dados do responsável legal</h4>
+                      <Form {...guardianForm}>
+                        <Field>
+                          <FieldLabel>Nome completo</FieldLabel>
+                          <Input {...guardianForm.register("full_name")} />
+                        </Field>
+                        <div className="grid grid-cols-2 gap-4">
+                          <Field>
+                            <FieldLabel>CPF</FieldLabel>
+                            <Input {...guardianForm.register("cpf")} />
+                          </Field>
+                          <Field>
+                            <FieldLabel>Telefone</FieldLabel>
+                            <Input {...guardianForm.register("phone")} />
+                          </Field>
+                        </div>
+                        <Field>
+                          <FieldLabel>Email</FieldLabel>
+                          <Input {...guardianForm.register("email")} />
+                        </Field>
+                      </Form>
+                    </>
+                  )}
+
+                  <FieldSeparator />
+
+                  <div className="flex gap-2">
+                    <Button type="button" onClick={handleContinue} className="flex-1">
+                      Continuar preenchendo agora
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={handleSkip} className="flex-1">
+                      Pular por enquanto
+                    </Button>
+                  </div>
+                </FieldGroup>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

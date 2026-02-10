@@ -2,10 +2,11 @@
 
 // eslint-disable-next-line simple-import-sort/imports
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,7 +34,6 @@ import {
   FormControl,
   FormMessage,
 } from "./ui/form";
-
 /* ------------------------------------------------------------------ */
 /* Schema                                                             */
 /* ------------------------------------------------------------------ */
@@ -69,6 +69,8 @@ export function SignupProfileForm({
 }: React.ComponentProps<"div">) {
   const [role, setRole] = useState<"patient" | "professional">("patient");
 
+  const router = useRouter();
+
   const methods = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -77,6 +79,7 @@ export function SignupProfileForm({
       nome_social: "",
       cpf: "",
       phone: "",
+      // email will be inferred from session on server side
       profession: "",
       gender: "",
       birth_date: "",
@@ -96,8 +99,28 @@ export function SignupProfileForm({
     setValue("role", nextRole);
   }
 
-  function onSubmit(data: FormData) {
-    console.log("[SignupProfileForm]", data);
+  async function onSubmit(data: FormData) {
+    try {
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const j = await res.json().catch(() => null);
+      if (res.ok && j?.success) {
+        // redirect to the next step (address) after successful profile save
+        router.replace("/cadastro/address");
+      } else if (j?.fieldErrors) {
+        // show field errors simply
+        alert("Erro de validação: " + JSON.stringify(j.fieldErrors));
+      } else {
+        alert(j?.message || "Erro ao enviar formulário");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao enviar formulário");
+      const { reset } = methods;
+    }
   }
 
   return (

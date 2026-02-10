@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 import { SignupProfileForm } from "@/components/cadastro_user-form";
+import { APP_NAME } from "@/lib/config";
 
 export default function CadastroPage() {
   const router = useRouter();
@@ -47,7 +48,7 @@ export default function CadastroPage() {
           <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
-          Acme Inc.
+          {APP_NAME}
         </a>
         <SignupProfileForm />
       </div>

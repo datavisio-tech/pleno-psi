@@ -1,8 +1,10 @@
 "use client";
 
+import { GalleryVerticalEnd } from "lucide-react";
+
 import AuthenticatedPage from "@/components/AuthenticatedPage";
 import { SignupProfileForm } from "@/components/cadastro_user-form";
-import { GalleryVerticalEnd } from "lucide-react";
+import { APP_NAME } from "@/lib/config";
 
 /**
  * Página de exemplo que usa `AuthenticatedPage` como template.
@@ -47,7 +49,7 @@ export default function ProtectedTemplatePage() {
             <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            Acme Inc.
+            {APP_NAME}
           </a>
           <SignupProfileForm />
         </div>
