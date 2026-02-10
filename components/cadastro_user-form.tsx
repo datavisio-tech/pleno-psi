@@ -92,7 +92,10 @@ export function SignupProfileForm({
     formState: { errors },
     setValue,
     control,
+    setError,
   } = methods;
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [generalError, setGeneralError] = React.useState<string | null>(null);
 
   function switchRole(nextRole: "patient" | "professional") {
     setRole(nextRole);
@@ -100,6 +103,8 @@ export function SignupProfileForm({
   }
 
   async function onSubmit(data: FormData) {
+    setGeneralError(null);
+    setIsSubmitting(true);
     try {
       const res = await fetch("/api/profile", {
         method: "POST",
@@ -108,18 +113,48 @@ export function SignupProfileForm({
       });
       const j = await res.json().catch(() => null);
       if (res.ok && j?.success) {
-        // redirect to the next step (address) after successful profile save
         router.replace("/cadastro/address");
-      } else if (j?.fieldErrors) {
-        // show field errors simply
-        alert("Erro de validação: " + JSON.stringify(j.fieldErrors));
-      } else {
-        alert(j?.message || "Erro ao enviar formulário");
+        return;
       }
-    } catch (e) {
+
+      // handle validation errors from API
+      if (j?.fieldErrors) {
+        Object.entries(j.fieldErrors).forEach(([k, v]) => {
+          try {
+            setError(k as any, { type: "server", message: String(v) });
+          } catch (e) {
+            // ignore unknown field
+          }
+        });
+        return;
+      }
+
+      // try to map common DB constraint messages to friendly errors
+      const msg = j?.message || (await res.text().catch(() => ""));
+      if (typeof msg === "string") {
+        if (
+          msg.includes("persons_cpf_key") ||
+          msg.toLowerCase().includes("cpf")
+        ) {
+          setError("cpf", { type: "server", message: "CPF já cadastrado" });
+        } else if (
+          msg.includes("persons_email_key") ||
+          msg.toLowerCase().includes("email")
+        ) {
+          setGeneralError(
+            "Já existe um cadastro associado ao e-mail desta conta.",
+          );
+        } else {
+          setGeneralError(msg || "Erro ao enviar formulário");
+        }
+      } else {
+        setGeneralError("Erro ao enviar formulário");
+      }
+    } catch (e: any) {
       console.error(e);
-      alert("Erro ao enviar formulário");
-      const { reset } = methods;
+      setGeneralError("Erro ao enviar formulário");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -316,9 +351,17 @@ export function SignupProfileForm({
                 <FieldSeparator />
 
                 {/* Submit */}
+                {generalError && (
+                  <div className="text-destructive text-sm">{generalError}</div>
+                )}
+
                 <Field>
-                  <Button type="submit" className="w-full">
-                    Próximo
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Enviando..." : "Próximo"}
                   </Button>
                 </Field>
               </FieldGroup>
