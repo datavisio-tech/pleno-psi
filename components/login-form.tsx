@@ -1,11 +1,20 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  AlertDialogPortal,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,6 +32,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { login } from "@/lib/auth";
+import { loginClient } from "@/lib/loginClient";
 import { cn } from "@/lib/utils";
 
 export const loginSchema = z
@@ -49,10 +59,12 @@ export function LoginForm({
   const [loading, setLoading] = React.useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialEmail = searchParams?.get("email") || "";
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: initialEmail, password: "" },
   });
 
   const {
@@ -86,20 +98,21 @@ export function LoginForm({
         success = true;
         console.log("[Login] Login real bem-sucedido");
       } else {
-        console.warn("[Login] Nenhum onSubmit fornecido — usando loginMock...");
+        console.warn(
+          "[Login] Nenhum onSubmit fornecido — usando /api/login...",
+        );
 
-        const res = await login({
+        // show modal/dialog by setting loading true (handled by state)
+        const res = await loginClient({
           email: data.email,
           password: data.password,
         });
 
-        if (!res.ok) {
-          // Não lançar — tratar localmente para evitar stack trace no console.
-          const message = res.error || "Erro no login";
+        if (!res.success) {
+          const message = res.message || "Credenciais inválidas";
 
-          // Aplica erros por campo quando presentes
-          if ((res as any).fieldErrors) {
-            Object.entries((res as any).fieldErrors).forEach(([field, msg]) => {
+          if (res.fieldErrors) {
+            Object.entries(res.fieldErrors).forEach(([field, msg]) => {
               // @ts-ignore
               setError(field, { type: "server", message: String(msg) });
             });
@@ -107,11 +120,10 @@ export function LoginForm({
 
           setAuthError(message);
           success = false;
-          return;
+        } else {
+          // Server sets HttpOnly cookie on success; client just proceeds
+          success = true;
         }
-
-        console.log("[Login] Login simulado OK:", res.user);
-        success = true;
       }
     } catch (error: any) {
       console.error("[Login] Erro no login:", error);
@@ -142,7 +154,7 @@ export function LoginForm({
     // 🚦 DECISÃO FINAL
     if (success) {
       console.log("[Login] Redirecionando para /");
-      router.push("/");
+      router.replace("/");
     } else {
       console.log("[Login] Login falhou — permanecendo na página");
       alert(authError || "Login falhou. Verifique suas credenciais.");
@@ -151,6 +163,20 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      {/* Loading dialog shown while `loading` is true */}
+      <AlertDialog open={loading} onOpenChange={() => {}}>
+        <AlertDialogPortal>
+          <AlertDialogOverlay />
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Entrando...</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogDescription>
+              Aguardando resposta do servidor. Por favor, aguarde.
+            </AlertDialogDescription>
+          </AlertDialogContent>
+        </AlertDialogPortal>
+      </AlertDialog>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Bem-vindo de volta</CardTitle>

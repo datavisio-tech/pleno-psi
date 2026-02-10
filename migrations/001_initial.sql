@@ -19,7 +19,10 @@ CREATE TABLE IF NOT EXISTS addresses (
 -- Persons
 CREATE TABLE IF NOT EXISTS persons (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  address_id uuid REFERENCES addresses(id) ON DELETE SET NULL ON UPDATE CASCADE,
   full_name text NOT NULL,
+  nome_social text,
   cpf varchar(14) UNIQUE,
   email text UNIQUE,
   phone text,

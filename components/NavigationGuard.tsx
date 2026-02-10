@@ -1,8 +1,12 @@
 "use client";
 
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function NavigationGuard(): null {
+  const pathname = usePathname();
+  const router = useRouter();
+
   useEffect(() => {
     function isBadUrl(u: string | null | undefined) {
       return typeof u === "string" && u.includes("[object Object]");
@@ -15,12 +19,10 @@ export default function NavigationGuard(): null {
       if (isBadUrl(href)) {
         e.preventDefault();
         console.error("Blocked navigation to malformed URL:", href);
-        // Optionally show user-friendly message
         return;
       }
     }
 
-    // Sanitize existing anchors and observe DOM for new ones
     function sanitizeAnchor(a: HTMLAnchorElement) {
       try {
         const href = a.getAttribute("href");
@@ -68,10 +70,8 @@ export default function NavigationGuard(): null {
       attributeFilter: ["href"],
     });
 
-    // Intercept anchor clicks
     window.addEventListener("click", onClick, true);
 
-    // Wrap history.pushState/replaceState to catch programmatic navigations
     const origPush = window.history.pushState.bind(window.history);
     const origReplace = window.history.replaceState.bind(window.history);
 
@@ -112,6 +112,30 @@ export default function NavigationGuard(): null {
       }
     };
   }, []);
+
+  useEffect(() => {
+    async function verifySession() {
+      try {
+        const isAuthPath =
+          typeof pathname === "string" && pathname.startsWith("/auth");
+
+        // Validate session by calling backend; backend reads cookie if present
+        const resp = await fetch(`/api/me`, { cache: "no-store" });
+        const j = await resp.json().catch(() => null);
+
+        if (resp.ok && j?.success) {
+          if (isAuthPath) router.replace("/");
+          return;
+        }
+
+        if (!isAuthPath) router.replace("/auth");
+      } catch (err) {
+        console.warn("[NavigationGuard] verifySession error", err);
+      }
+    }
+
+    if (typeof window !== "undefined") verifySession();
+  }, [pathname, router]);
 
   return null;
 }

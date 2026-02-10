@@ -67,6 +67,27 @@ Branch principal: `main`
 
 ---
 
+## ✅ Sprint 2 — Autenticação e guardas (10/02/2026)
+
+Resumo das alterações implementadas pelo agente nesta branch `feature/authentication`:
+
+- Migrada a sessão cliente baseada em `localStorage` para cookie HttpOnly `pleno.sid` (HMAC-signed) via `lib/session.ts`.
+- Endpoints `/api/login` e `/api/register` agora geram o cookie `pleno.sid` para sessão (auto-login após registro).
+- `/api/me` atualizado para aceitar sessão via cookie e manter fallback por query params para compatibilidade.
+- `components/NavigationGuard.tsx` atualizado: valida sessão via `/api/me` (cookie) e impede acesso a `/auth/*` quando já autenticado; também mantém sanitização de anchors e histórico.
+- `components/AuthenticatedPage.tsx` criado como wrapper/template para páginas protegidas (ex.: `app/protected-template/page.tsx`).
+- Removidas gravações inseguras em `localStorage.pleno:user` em `signup` e `login` — agora a app confia no cookie HttpOnly.
+- Corrigido `components/cadastro_user-form.tsx` (Zod schema, FormProvider usage, defaults e correções de render).
+- `app/cadastro/page.tsx` e `app/page.tsx` atualizados para usar validação de sessão via `/api/me` (cookie) e exibir estados de loading/redirect.
+
+Impacto e recomendações:
+
+- Defina `SESSION_SECRET` (ou `NEXTAUTH_SECRET`) em ambientes de produção — atualmente existe fallback inseguro.
+- Implementar endpoint `/api/logout` que limpe `pleno.sid` (já sugerido pelo agente).
+- Recomendado: adicionar testes automatizados para login/register/me e fluxos de logout.
+
+> Última atualização: 10/02/2026
+
 ## 🔧 Ações do Agente (07/02/2026) — Publicação de backlog e limpeza
 
 Resumo das ações realizadas automaticamente pelo agente:

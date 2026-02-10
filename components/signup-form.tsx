@@ -16,7 +16,18 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
-import { registerMock } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { registerClient } from "@/lib/registerClient";
 import Image from "next/image";
 
 /// ----------------------------------------------------------------
@@ -57,11 +68,9 @@ export function RegisterForm() {
     },
   });
 
-  function onSubmit(data: RegisterUserFormData) {
-    console.log("signup DATA:", data); // <-- Aqui você pode acessar os valores do formulário);
-  }
-
-  return <SignupForm form={form} onSubmit={onSubmit} />;
+  // Não passamos `onSubmit` aqui: o `SignupForm` chamará a API diretamente
+  // via `registerClient` e tratrá loading/erros internamente.
+  return <SignupForm form={form} />;
 }
 
 /// ----------------------------------------------------------------
@@ -69,7 +78,7 @@ export function RegisterForm() {
 /// ----------------------------------------------------------------
 type SignupFormProps = React.ComponentProps<"div"> & {
   form: ReturnType<typeof useForm<RegisterUserFormData>>;
-  onSubmit: (data: RegisterUserFormData) => void;
+  onSubmit?: (data: RegisterUserFormData) => void;
 };
 
 export function SignupForm({
@@ -87,6 +96,11 @@ export function SignupForm({
 
   const [loading, setLoading] = React.useState(false);
   const [authError, setAuthError] = React.useState<string | null>(null);
+  const router = useRouter();
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [duplicateEmail, setDuplicateEmail] = React.useState<string | null>(
+    null,
+  );
 
   async function onSubmitInternal(data: RegisterUserFormData) {
     setAuthError(null);
@@ -97,21 +111,33 @@ export function SignupForm({
         await Promise.resolve(onSubmit(data));
         success = true;
       } else {
-        const res = await registerMock({
+        const res = await registerClient({
           email: data.email,
           password: data.password,
+          confirmPassword: data.confirmPassword,
         });
-        if (!res.ok) {
-          if ((res as any).fieldErrors) {
-            Object.entries((res as any).fieldErrors).forEach(([field, msg]) => {
+
+        if (!res.success) {
+          if (res.fieldErrors) {
+            Object.entries(res.fieldErrors).forEach(([field, msg]) => {
               // @ts-ignore
               setError(field, { type: "server", message: String(msg) });
             });
           }
-          setAuthError(res.error || "Erro no registro");
-          return;
+
+          // If duplicate email, open AlertDialog to offer actions
+          if (res.fieldErrors && (res.fieldErrors as any).email) {
+            setDuplicateEmail(data.email);
+            setDialogOpen(true);
+          } else {
+            setAuthError(res.message || "Erro no registro");
+          }
+
+          // don't return early so UI can finalize consistently
+          success = false;
+        } else {
+          success = true;
         }
-        success = true;
       }
     } catch (error: any) {
       const message = error?.message || "Erro no registro";
@@ -123,10 +149,21 @@ export function SignupForm({
     if (success) {
       // opcional: você pode redirecionar aqui ou exibir uma mensagem de sucesso
       console.log("Registro bem-sucedido", data.email);
+      // notificar usuário e redirecionar como usuário "logado" (simulado)
+      try {
+        alert("Conta criada com sucesso — você será redirecionado");
+      } catch (e) {
+        /* ignore */
+      }
+      // Redireciona para raiz — rota deverá checar autenticação no futuro
+      try {
+        router.replace("/");
+      } catch (e) {
+        // fallback
+        window.location.href = "/";
+      }
     }
   }
-
-  
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -240,6 +277,71 @@ export function SignupForm({
         Conheça nossos <a href="/edocs/termos">Termos de Serviço</a> e{" "}
         <a href="/edocs/politicas">Política de Privacidade</a>.
       </FieldDescription>
+      {/* Dialog for duplicate email */}
+      <SignupFormDialog
+        open={dialogOpen}
+        onOpenChange={(v) => setDialogOpen(v)}
+        email={duplicateEmail}
+        onGotoLogin={(email) => {
+          // redirect to login with email prefilled
+          try {
+            const q = email ? `?email=${encodeURIComponent(email)}` : "";
+            router.push(`/auth${q}`);
+          } catch (e) {
+            window.location.href = `/auth${email ? `?email=${encodeURIComponent(email)}` : ""}`;
+          }
+        }}
+      />
     </div>
+  );
+}
+
+// AlertDialog markup is rendered by the component above; to keep file self-contained
+export function SignupFormDialog({
+  open,
+  onOpenChange,
+  email,
+  onGotoLogin,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  email?: string | null;
+  onGotoLogin: (email?: string | null) => void;
+}) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>E-mail já cadastrado</AlertDialogTitle>
+        </AlertDialogHeader>
+        <AlertDialogDescription>
+          O e-mail <strong>{email}</strong> já está em uso. Deseja usar outro
+          e-mail para criar a conta ou ir para a tela de login?
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          <AlertDialogCancel
+            onClick={() => {
+              onOpenChange(false);
+              setTimeout(() => {
+                const el = document.getElementById(
+                  "email",
+                ) as HTMLElement | null;
+                if (el) el.focus();
+              }, 150);
+            }}
+          >
+            Usar outro e-mail
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              onOpenChange(false);
+              onGotoLogin(email);
+            }}
+          >
+            Ir para login
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
