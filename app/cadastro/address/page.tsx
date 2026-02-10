@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
@@ -14,16 +15,27 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  CountryItem,
+  fetchBrazilAddressByCep,
+  fetchCountries,
+} from "@/lib/country";
 
 // Schema for address
 const addressSchema = z.object({
@@ -33,7 +45,10 @@ const addressSchema = z.object({
   neighborhood: z.string().optional(),
   city: z.string().min(1, "Cidade é obrigatória"),
   state: z.string().min(1, "Estado é obrigatório"),
-  country: z.string().min(1, "País é obrigatório"),
+  // country fields: persisted to DB (country_flag_svg must be saved)
+  country_name: z.string().min(1, "País é obrigatório"),
+  country_code: z.string().min(1),
+  country_flag_svg: z.string().optional(),
 });
 
 const guardianSchema = z.object({
@@ -58,7 +73,9 @@ export default function CadastroAddressPage() {
       neighborhood: "",
       city: "",
       state: "",
-      country: "",
+      country_name: "",
+      country_code: "",
+      country_flag_svg: "",
     },
   });
 
@@ -77,6 +94,9 @@ export default function CadastroAddressPage() {
   >(null);
   const [isMinor, setIsMinor] = React.useState(false);
   const [loadingProfile, setLoadingProfile] = React.useState(true);
+  const [countries, setCountries] = React.useState<CountryItem[] | null>(null);
+  const [loadingCountries, setLoadingCountries] = React.useState(false);
+  const [cepError, setCepError] = React.useState<string | null>(null);
 
   // On mount, fetch profile to determine birth_date and prefill guardian when needed
   React.useEffect(() => {
@@ -103,6 +123,26 @@ export default function CadastroAddressPage() {
         setLoadingProfile(false);
       }
     })();
+  }, []);
+
+  // fetch countries for Select
+  React.useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoadingCountries(true);
+      try {
+        const list = await fetchCountries();
+        if (!mounted) return;
+        setCountries(list);
+      } catch (e) {
+        // ignore for now
+      } finally {
+        if (mounted) setLoadingCountries(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   function handleSkip() {
@@ -146,6 +186,34 @@ export default function CadastroAddressPage() {
     });
   }
 
+  // watch zip and country selection
+  const zipWatcher = addressForm.watch("zip_code");
+  const countryCode = addressForm.watch("country_code");
+
+  React.useEffect(() => setCepError(null), [zipWatcher]);
+
+  async function handleCepBlur() {
+    setCepError(null);
+    if (!zipWatcher || !countryCode) return;
+    if (countryCode.toUpperCase() !== "BR") return;
+    const cleaned = String(zipWatcher).replace(/[^0-9]/g, "");
+    if (cleaned.length < 8) {
+      setCepError("CEP inválido");
+      return;
+    }
+    try {
+      const res = await fetchBrazilAddressByCep(cleaned);
+      // fill fields but keep editable
+      addressForm.setValue("street", res.street || "");
+      addressForm.setValue("neighborhood", res.neighborhood || "");
+      addressForm.setValue("city", res.city || "");
+      addressForm.setValue("state", res.state || "");
+      setCepError(null);
+    } catch (e: any) {
+      setCepError(e?.message || "CEP não encontrado");
+    }
+  }
+
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-md flex-col gap-6">
@@ -155,12 +223,92 @@ export default function CadastroAddressPage() {
               <form onSubmit={(e) => e.preventDefault()}>
                 <FieldGroup>
                   <h2 className="text-xl font-semibold">Endereço</h2>
-                  <Field>
-                    <FieldLabel>CEP</FieldLabel>
-                    <Input {...addressForm.register("zip_code")} />
-                    <FormMessage />
-                  </Field>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field>
+                      <FieldLabel>País</FieldLabel>
+                      <Select
+                        value={
+                          addressForm.getValues("country_code") || undefined
+                        }
+                        onValueChange={(val) => {
+                          const found = (countries || []).find(
+                            (c) => c.code === val,
+                          );
+                          if (found) {
+                            addressForm.setValue("country_code", found.code);
+                            addressForm.setValue("country_name", found.name);
+                            addressForm.setValue(
+                              "country_flag_svg",
+                              found.flag,
+                            );
+                          } else {
+                            addressForm.setValue("country_code", val || "");
+                            addressForm.setValue("country_name", "");
+                            addressForm.setValue("country_flag_svg", "");
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue
+                            placeholder={
+                              loadingCountries ? "Carregando..." : "Selecione"
+                            }
+                          >
+                            {/* show inline flag and name if selected */}
+                            {addressForm.getValues("country_flag_svg") ? (
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={addressForm.getValues(
+                                    "country_flag_svg",
+                                  )}
+                                  alt="flag"
+                                  className="h-4 w-4"
+                                />
+                                <span>
+                                  {addressForm.getValues("country_name")}
+                                </span>
+                              </div>
+                            ) : null}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-auto">
+                          {loadingCountries && (
+                            <SelectItem value="" disabled>
+                              Carregando...
+                            </SelectItem>
+                          )}
+                          {(countries || []).map((c) => (
+                            <SelectItem key={c.code} value={c.code}>
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={c.flag}
+                                  alt={`flag-${c.code}`}
+                                  className="h-4 w-4"
+                                />
+                                <span>{c.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </Field>
 
+                    <Field>
+                      <FieldLabel>CEP</FieldLabel>
+                      <Input
+                        {...addressForm.register("zip_code")}
+                        onBlur={handleCepBlur}
+                      />
+                      {cepError ? (
+                        <div className="text-destructive text-sm">
+                          {cepError}
+                        </div>
+                      ) : (
+                        <FormMessage />
+                      )}
+                    </Field>
+                  </div>
                   <Field>
                     <FieldLabel>Logradouro</FieldLabel>
                     <Input {...addressForm.register("street")} />
@@ -168,7 +316,7 @@ export default function CadastroAddressPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <Field>
-                      <FieldLabel>Número</FieldLabel>
+                      <FieldLabel>Complemento</FieldLabel>
                       <Input {...addressForm.register("number")} />
                     </Field>
                     <Field>
@@ -177,21 +325,24 @@ export default function CadastroAddressPage() {
                     </Field>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field>
+                  <div className="grid grid-cols-12 gap-4">
+                    {/* Cidade ocupa mais espaço */}
+                    <Field className="col-span-9">
                       <FieldLabel>Cidade</FieldLabel>
                       <Input {...addressForm.register("city")} />
                     </Field>
-                    <Field>
-                      <FieldLabel>Estado</FieldLabel>
-                      <Input {...addressForm.register("state")} />
+
+                    {/* UF curta (2 caracteres), apenas sugestão */}
+                    <Field className="col-span-3">
+                      <FieldLabel>Estado (UF)</FieldLabel>
+                      <Input
+                        {...addressForm.register("state")}
+                        maxLength={2}
+                        placeholder="UF"
+                        className="uppercase"
+                      />
                     </Field>
                   </div>
-
-                  <Field>
-                    <FieldLabel>País</FieldLabel>
-                    <Input {...addressForm.register("country")} />
-                  </Field>
 
                   <FieldSeparator />
 
@@ -257,7 +408,7 @@ export default function CadastroAddressPage() {
                       onClick={handleContinue}
                       className="flex-1"
                     >
-                      Continuar preenchendo agora
+                      Submeter Cadastro
                     </Button>
                     <Button
                       type="button"
