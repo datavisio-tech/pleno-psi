@@ -16,7 +16,14 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 
 // Schema for address
 const addressSchema = z.object({
@@ -65,7 +72,9 @@ export default function CadastroAddressPage() {
     },
   });
 
-  const [patientIsResponsible, setPatientIsResponsible] = React.useState<boolean | null>(null);
+  const [patientIsResponsible, setPatientIsResponsible] = React.useState<
+    boolean | null
+  >(null);
   const [isMinor, setIsMinor] = React.useState(false);
   const [loadingProfile, setLoadingProfile] = React.useState(true);
 
@@ -80,7 +89,9 @@ export default function CadastroAddressPage() {
           const p = j.person;
           if (p.birth_date) {
             const birth = new Date(p.birth_date);
-            const age = Math.floor((Date.now() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25));
+            const age = Math.floor(
+              (Date.now() - birth.getTime()) / (1000 * 60 * 60 * 24 * 365.25),
+            );
             setIsMinor(age < 18);
           }
           // default patient is self-responsible
@@ -186,12 +197,24 @@ export default function CadastroAddressPage() {
 
                   <h3 className="text-lg font-medium">Responsável legal</h3>
                   <Field>
-                    <FieldLabel>O paciente é o próprio responsável legal?</FieldLabel>
-                    <div className="flex gap-4 mt-2">
-                      <Button type="button" variant={patientIsResponsible ? undefined : "ghost"} onClick={() => setPatientIsResponsible(true)}>
+                    <FieldLabel>
+                      O paciente é o próprio responsável legal?
+                    </FieldLabel>
+                    <div className="mt-2 flex gap-4">
+                      <Button
+                        type="button"
+                        variant={patientIsResponsible ? undefined : "ghost"}
+                        onClick={() => setPatientIsResponsible(true)}
+                      >
                         Sim
                       </Button>
-                      <Button type="button" variant={patientIsResponsible === false ? undefined : "ghost"} onClick={() => setPatientIsResponsible(false)}>
+                      <Button
+                        type="button"
+                        variant={
+                          patientIsResponsible === false ? undefined : "ghost"
+                        }
+                        onClick={() => setPatientIsResponsible(false)}
+                      >
                         Não
                       </Button>
                     </div>
@@ -200,7 +223,9 @@ export default function CadastroAddressPage() {
                   {patientIsResponsible === false && (
                     <>
                       <FieldSeparator />
-                      <h4 className="text-md font-medium">Dados do responsável legal</h4>
+                      <h4 className="text-md font-medium">
+                        Dados do responsável legal
+                      </h4>
                       <Form {...guardianForm}>
                         <Field>
                           <FieldLabel>Nome completo</FieldLabel>
@@ -227,10 +252,19 @@ export default function CadastroAddressPage() {
                   <FieldSeparator />
 
                   <div className="flex gap-2">
-                    <Button type="button" onClick={handleContinue} className="flex-1">
+                    <Button
+                      type="button"
+                      onClick={handleContinue}
+                      className="flex-1"
+                    >
                       Continuar preenchendo agora
                     </Button>
-                    <Button type="button" variant="ghost" onClick={handleSkip} className="flex-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={handleSkip}
+                      className="flex-1"
+                    >
                       Pular por enquanto
                     </Button>
                   </div>
