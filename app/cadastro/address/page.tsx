@@ -97,6 +97,8 @@ export default function CadastroAddressPage() {
   const [countries, setCountries] = React.useState<CountryItem[] | null>(null);
   const [loadingCountries, setLoadingCountries] = React.useState(false);
   const [cepError, setCepError] = React.useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
 
   // On mount, fetch profile to determine birth_date and prefill guardian when needed
   React.useEffect(() => {
@@ -151,39 +153,71 @@ export default function CadastroAddressPage() {
   }
 
   function handleContinue() {
-    // Validate address and guardian (if shown/required)
-    const okAddress = addressForm.trigger();
-    Promise.resolve(okAddress).then((addrValid) => {
+    (async () => {
+      setSubmitError(null);
+      const addrValid = await addressForm.trigger();
       if (!addrValid) return;
 
+      let responsiblePayload: any = null;
+
       if (isMinor) {
-        // guardian required
         if (patientIsResponsible) {
-          // populate guardian with patient data (would use profile data)
-          // TODO: persist address and guardian as needed
-          router.replace("/");
+          responsiblePayload = null;
         } else {
-          guardianForm.trigger().then((gValid) => {
-            if (!gValid) return;
-            // TODO: persist address and guardian
-            router.replace("/");
-          });
+          const gValid = await guardianForm.trigger();
+          if (!gValid) return;
+          const g = guardianForm.getValues();
+          responsiblePayload = {
+            ...g,
+            password: Math.random().toString(36).slice(2, 10),
+          };
         }
       } else {
-        // adult: guardian optional
         if (patientIsResponsible || patientIsResponsible === null) {
-          // continue
-          // TODO: persist address
-          router.replace("/");
+          responsiblePayload = null;
         } else {
-          guardianForm.trigger().then((gValid) => {
-            if (!gValid) return;
-            // TODO: persist address and guardian
-            router.replace("/");
-          });
+          const gValid = await guardianForm.trigger();
+          if (!gValid) return;
+          const g = guardianForm.getValues();
+          responsiblePayload = {
+            ...g,
+            password: Math.random().toString(36).slice(2, 10),
+          };
         }
       }
-    });
+
+      const body = {
+        ...addressForm.getValues(),
+        responsible: responsiblePayload,
+      };
+
+      try {
+        setIsSubmitting(true);
+        const res = await fetch("/api/address", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok || !j.success) {
+          if (j.fieldErrors) {
+            Object.entries(j.fieldErrors).forEach(([k, v]) => {
+              if (k in addressForm.getValues())
+                addressForm.setError(k as any, { message: String(v) });
+              else guardianForm.setError(k as any, { message: String(v) });
+            });
+          }
+          setSubmitError(j.message || "Erro ao submeter");
+          return;
+        }
+
+        router.replace("/");
+      } catch (e: any) {
+        setSubmitError(e?.message || "Erro de rede");
+      } finally {
+        setIsSubmitting(false);
+      }
+    })();
   }
 
   // watch zip and country selection
@@ -273,7 +307,7 @@ export default function CadastroAddressPage() {
                         </SelectTrigger>
                         <SelectContent className="max-h-60 overflow-auto">
                           {loadingCountries && (
-                            <SelectItem value="" disabled>
+                            <SelectItem value="__loading" disabled>
                               Carregando...
                             </SelectItem>
                           )}
@@ -293,7 +327,6 @@ export default function CadastroAddressPage() {
                       </Select>
                       <FormMessage />
                     </Field>
-
                     <Field>
                       <FieldLabel>CEP</FieldLabel>
                       <Input
@@ -407,8 +440,9 @@ export default function CadastroAddressPage() {
                       type="button"
                       onClick={handleContinue}
                       className="flex-1"
+                      disabled={isSubmitting}
                     >
-                      Submeter Cadastro
+                      {isSubmitting ? "Enviando..." : "Submeter Cadastro"}
                     </Button>
                     <Button
                       type="button"
@@ -419,6 +453,9 @@ export default function CadastroAddressPage() {
                       Pular por enquanto
                     </Button>
                   </div>
+                  {submitError ? (
+                    <div className="text-destructive mt-2">{submitError}</div>
+                  ) : null}
                 </FieldGroup>
               </form>
             </Form>

@@ -39,17 +39,36 @@ export async function fetchBrazilAddressByCep(
   cep: string,
 ): Promise<BrazilCepResult> {
   const cleaned = String(cep).replace(/[^0-9]/g, "");
-  const res = await fetch(`https://brasilapi.com.br/api/cep/v1/${cleaned}`);
-  if (!res.ok) {
-    const txt = await res.text().catch(() => "");
-    throw new Error(txt || "CEP inválido");
+  try {
+    const res = await fetch(`https://brasilapi.com.br/api/cep/v1/${cleaned}`);
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      try {
+        const jsonErr = JSON.parse(txt || "null");
+        throw new Error(
+          jsonErr?.error ||
+            "CEP não encontrado corrija ou continue preenchendo manualmente",
+        );
+      } catch (_) {
+        throw new Error(
+          txt ||
+            "CEP não encontrado corrija ou continue preenchendo manualmente",
+        );
+      }
+    }
+    const j = await res.json();
+    return {
+      cep: j.cep,
+      // BrasilAPI sometimes returns 'state'/'city' keys depending on service
+      state: j.state || j.uf || "",
+      city: j.city || j.localidade || "",
+      neighborhood: j.neighborhood || j.bairro || "",
+      street: j.street || j.logradouro || "",
+    };
+  } catch (err: any) {
+    // network/CORS errors surface here as generic TypeError or similar
+    throw new Error(
+      "CEP não encontrado corrija ou continue preenchendo manualmente",
+    );
   }
-  const j = await res.json();
-  return {
-    cep: j.cep,
-    state: j.uf,
-    city: j.localidade,
-    neighborhood: j.bairro,
-    street: j.logradouro,
-  };
 }
