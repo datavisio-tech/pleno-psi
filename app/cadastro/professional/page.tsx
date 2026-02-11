@@ -118,6 +118,8 @@ export default function ProfessionalOnboarding() {
   const [loadingCountries, setLoadingCountries] = React.useState(false);
   const [cepError, setCepError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [loadingUser, setLoadingUser] = React.useState(false);
+  const [generalError, setGeneralError] = React.useState<string | null>(null);
   const [clinicMode, setClinicMode] = React.useState<
     "none" | "associate" | "create"
   >("none");
@@ -138,6 +140,7 @@ export default function ProfessionalOnboarding() {
     })();
     // fetch current user name to prefill `nome_resp`
     (async () => {
+      setLoadingUser(true);
       try {
         const res = await fetch("/api/me");
         const j = await res.json().catch(() => ({}));
@@ -146,6 +149,8 @@ export default function ProfessionalOnboarding() {
         }
       } catch (e) {
         // ignore
+      } finally {
+        setLoadingUser(false);
       }
     })();
     return () => {
@@ -274,238 +279,271 @@ export default function ProfessionalOnboarding() {
     <AuthenticatedPage>
       <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
         <div className="flex w-full max-w-lg flex-col gap-6">
-          <Card>
-            <CardContent>
-              <h2 className="text-xl font-semibold">
-                Dados da Conta Profissional
-              </h2>
-              <br />
-              {/* Clinica Block*/}
-              <FieldSeparator />
-              <Form {...clinicForm}>
-                <form onSubmit={(e) => e.preventDefault()}>
-                  <FieldGroup>
-                    <h3 className="text-lg font-medium">Dados da Clínica</h3>
-                    <Field>
-                      <FieldLabel>Nome Empresa</FieldLabel>
-                      <Input {...clinicForm.register("name")} />
-                    </Field>
-                    <Field>
-                      <FieldLabel>Nome Fantasia</FieldLabel>
-                      <Input {...clinicForm.register("legal_name")} />
-                    </Field>
-                    <Field>
-                      <FieldLabel>CNPJ</FieldLabel>
-                      <Input {...clinicForm.register("cnpj")} />
-                    </Field>
-                  </FieldGroup>
-                </form>
-              </Form>
-              <br />
-
-              {/* Professional block */}
-              <FieldSeparator />
-              <Form {...profForm}>
-                <form onSubmit={(e) => e.preventDefault()}>
-                  <FieldGroup>
-                    <h3 className="text-lg font-medium">Responsável técnico</h3>
-                    <Field>
-                      <FieldLabel>Nome do Profissional Responsável</FieldLabel>
-                      <Input
-                        {...profForm.register("nome_resp")}
-                        readOnly
-                        disabled
-                      />
-                      <p className="text-muted-foreground mt-2 text-sm">
-                        Nome do usuário logado (não editável).
-                      </p>
-                    </Field>
-                    <div className="grid grid-cols-2 gap-4">
+          <Card className="overflow-hidden p-0">
+            <CardContent className="grid p-0 md:grid-cols-1">
+              <div className="p-6 md:p-8">
+                <div className="mb-4 flex flex-col items-center gap-2 text-center">
+                  <h1 className="text-2xl font-bold">Complete seu cadastro</h1>
+                  <p className="text-muted-foreground text-sm">
+                    Precisamos de mais algumas informações para finalizar seu
+                    perfil profissional
+                  </p>
+                </div>
+                {generalError && (
+                  <div className="text-destructive mb-4 text-sm">
+                    {generalError}
+                  </div>
+                )}
+                {/* Clinica Block*/}
+                <FieldSeparator />
+                <Form {...clinicForm}>
+                  <form onSubmit={(e) => e.preventDefault()}>
+                    <FieldGroup>
+                      <h3 className="text-lg font-medium">Dados da Clínica</h3>
                       <Field>
-                        <FieldLabel>Numero do Registro</FieldLabel>
-                        <Input {...profForm.register("professional_license")} />
-                        {/* numero do conselho de classe */}
+                        <FieldLabel>Nome Empresa</FieldLabel>
+                        <Input {...clinicForm.register("name")} />
                       </Field>
                       <Field>
-                        <FieldLabel>Entidade de Classe</FieldLabel>
-                        <Input
-                          {...profForm.register("professional_entity")}
-                          placeholder="Ex: CRM, CRO, COREME"
-                        />
+                        <FieldLabel>Nome Fantasia</FieldLabel>
+                        <Input {...clinicForm.register("legal_name")} />
+                      </Field>
+                      <Field>
+                        <FieldLabel>CNPJ</FieldLabel>
+                        <Input {...clinicForm.register("cnpj")} />
+                      </Field>
+                    </FieldGroup>
+                  </form>
+                </Form>
+                <br />
+
+                {/* Professional block */}
+                <FieldSeparator />
+                <Form {...profForm}>
+                  <form onSubmit={(e) => e.preventDefault()}>
+                    <FieldGroup>
+                      <h3 className="text-lg font-medium">
+                        Responsável técnico
+                      </h3>
+                      <Field>
+                        <FieldLabel>
+                          Nome do Profissional Responsável
+                        </FieldLabel>
+                        {loadingUser ? (
+                          <Input placeholder="Carregando..." disabled />
+                        ) : (
+                          <Input
+                            value={profForm.watch("nome_resp") || ""}
+                            readOnly
+                            aria-label="Nome do responsável"
+                          />
+                        )}
+                        <p className="text-muted-foreground mt-2 text-sm"></p>
+                      </Field>
+                      <div className="grid grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Numero do Registro</FieldLabel>
+                          <Input
+                            {...profForm.register("professional_license")}
+                          />
+                          {/* numero do conselho de classe */}
+                        </Field>
+                        <Field>
+                          <FieldLabel>Entidade de Classe</FieldLabel>
+                          <Input
+                            {...profForm.register("professional_entity")}
+                            placeholder="CRP-DF, CRO-AM... "
+                          />
+                          <p className="text-muted-foreground mt-2 text-sm"></p>
+                        </Field>
+                      </div>
+                    </FieldGroup>
+                  </form>
+                </Form>
+                <br />
+                <FieldSeparator />
+
+                {/* Address block */}
+                <Form {...addressForm}>
+                  <form onSubmit={(e) => e.preventDefault()}>
+                    <FieldGroup>
+                      <h3 className="text-lg font-medium">
+                        Endereço do profissional
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>País</FieldLabel>
+                          <Select
+                            value={
+                              addressForm.getValues("country_code") || undefined
+                            }
+                            onValueChange={(val) => {
+                              const found = (countries || []).find(
+                                (c) => c.code === val,
+                              );
+                              if (found) {
+                                addressForm.setValue(
+                                  "country_code",
+                                  found.code,
+                                );
+                                addressForm.setValue(
+                                  "country_name",
+                                  found.name,
+                                );
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue
+                                placeholder={
+                                  loadingCountries
+                                    ? "Carregando..."
+                                    : "Selecione"
+                                }
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {(countries || []).map((c) => (
+                                <SelectItem key={c.code} value={c.code}>
+                                  {c.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </Field>
+
+                        <Field>
+                          <FieldLabel>CEP</FieldLabel>
+                          <Input
+                            {...addressForm.register("zip_code")}
+                            onBlur={handleCepBlur}
+                          />
+                          {cepError ? (
+                            <div className="text-destructive text-sm">
+                              {cepError}
+                            </div>
+                          ) : (
+                            <FormMessage />
+                          )}
+                        </Field>
+                      </div>
+
+                      <Field>
+                        <FieldLabel>Logradouro</FieldLabel>
+                        <Input {...addressForm.register("street")} />
+                      </Field>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Número</FieldLabel>
+                          <Input {...addressForm.register("number")} />
+                        </Field>
+                        <Field>
+                          <FieldLabel>Cidade</FieldLabel>
+                          <Input {...addressForm.register("city")} />
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <Field>
+                          <FieldLabel>Estado (UF)</FieldLabel>
+                          <Input {...addressForm.register("state")} />
+                        </Field>
+                        <div />
+                      </div>
+                    </FieldGroup>
+                  </form>
+                </Form>
+
+                <FieldSeparator />
+
+                <FieldSeparator />
+
+                {/* Clinic association */}
+                <FieldGroup>
+                  {clinicMode === "associate" && (
+                    <div className="mt-4">
+                      <Field>
+                        <FieldLabel>Buscar clínica (nome ou CNPJ)</FieldLabel>
+                        <Input placeholder="Pesquisar..." />
+                        <FormMessage />
                         <p className="text-muted-foreground mt-2 text-sm">
-                          Ex.: CRM, CRO, COREME — informe o conselho ao qual
-                          pertence.
+                          Selecione uma clínica para vinculá-la ao seu perfil.
+                          (Busca não implementada — demo)
                         </p>
                       </Field>
                     </div>
-                  </FieldGroup>
-                </form>
-              </Form>
-              <br />
-              <FieldSeparator />
+                  )}
 
-              {/* Address block */}
-              <Form {...addressForm}>
-                <form onSubmit={(e) => e.preventDefault()}>
-                  <FieldGroup>
-                    <h3 className="text-lg font-medium">
-                      Endereço do profissional
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>País</FieldLabel>
-                        <Select
-                          value={
-                            addressForm.getValues("country_code") || undefined
-                          }
-                          onValueChange={(val) => {
-                            const found = (countries || []).find(
-                              (c) => c.code === val,
-                            );
-                            if (found) {
-                              addressForm.setValue("country_code", found.code);
-                              addressForm.setValue("country_name", found.name);
-                            }
-                          }}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue
-                              placeholder={
-                                loadingCountries ? "Carregando..." : "Selecione"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {(countries || []).map((c) => (
-                              <SelectItem key={c.code} value={c.code}>
-                                {c.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </Field>
-
-                      <Field>
-                        <FieldLabel>CEP</FieldLabel>
-                        <Input
-                          {...addressForm.register("zip_code")}
-                          onBlur={handleCepBlur}
-                        />
-                        {cepError ? (
-                          <div className="text-destructive text-sm">
-                            {cepError}
+                  {clinicMode === "create" && (
+                    <div className="mt-4">
+                      <Form {...clinicForm}>
+                        <form onSubmit={(e) => e.preventDefault()}>
+                          <Field>
+                            <FieldLabel>Nome da clínica</FieldLabel>
+                            <Input {...clinicForm.register("name")} />
+                          </Field>
+                          <Field>
+                            <FieldLabel>Nome empresarial</FieldLabel>
+                            <Input {...clinicForm.register("legal_name")} />
+                          </Field>
+                          <Field>
+                            <FieldLabel>CNPJ</FieldLabel>
+                            <Input {...clinicForm.register("cnpj")} />
+                          </Field>
+                          <div className="grid grid-cols-2 gap-4">
+                            <Field>
+                              <FieldLabel>CEP (clínica)</FieldLabel>
+                              <Input
+                                {...clinicForm.register("clinic_zip_code")}
+                              />
+                            </Field>
+                            <Field>
+                              <FieldLabel>Rua/Logradouro</FieldLabel>
+                              <Input
+                                {...clinicForm.register("clinic_street")}
+                              />
+                            </Field>
                           </div>
-                        ) : (
-                          <FormMessage />
-                        )}
-                      </Field>
+                          <div className="grid grid-cols-2 gap-4">
+                            <Field>
+                              <FieldLabel>Número</FieldLabel>
+                              <Input
+                                {...clinicForm.register("clinic_number")}
+                              />
+                            </Field>
+                            <Field>
+                              <FieldLabel>Cidade</FieldLabel>
+                              <Input {...clinicForm.register("clinic_city")} />
+                            </Field>
+                          </div>
+                        </form>
+                      </Form>
                     </div>
+                  )}
+                </FieldGroup>
 
-                    <Field>
-                      <FieldLabel>Logradouro</FieldLabel>
-                      <Input {...addressForm.register("street")} />
-                    </Field>
+                <FieldSeparator />
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>Número</FieldLabel>
-                        <Input {...addressForm.register("number")} />
-                      </Field>
-                      <Field>
-                        <FieldLabel>Cidade</FieldLabel>
-                        <Input {...addressForm.register("city")} />
-                      </Field>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <Field>
-                        <FieldLabel>Estado (UF)</FieldLabel>
-                        <Input {...addressForm.register("state")} />
-                      </Field>
-                      <div />
-                    </div>
-                  </FieldGroup>
-                </form>
-              </Form>
-
-              <FieldSeparator />
-
-              <FieldSeparator />
-
-              {/* Clinic association */}
-              <FieldGroup>
-                {clinicMode === "associate" && (
-                  <div className="mt-4">
-                    <Field>
-                      <FieldLabel>Buscar clínica (nome ou CNPJ)</FieldLabel>
-                      <Input placeholder="Pesquisar..." />
-                      <FormMessage />
-                      <p className="text-muted-foreground mt-2 text-sm">
-                        Selecione uma clínica para vinculá-la ao seu perfil.
-                        (Busca não implementada — demo)
-                      </p>
-                    </Field>
+                <div className="mt-4">
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      onClick={handleSubmitAll}
+                      disabled={isSubmitting}
+                      className="w-full"
+                    >
+                      {isSubmitting ? "Enviando..." : "Próximo"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={handleSkip}
+                      className="w-full"
+                    >
+                      Pular por enquanto
+                    </Button>
                   </div>
-                )}
-
-                {clinicMode === "create" && (
-                  <div className="mt-4">
-                    <Form {...clinicForm}>
-                      <form onSubmit={(e) => e.preventDefault()}>
-                        <Field>
-                          <FieldLabel>Nome da clínica</FieldLabel>
-                          <Input {...clinicForm.register("name")} />
-                        </Field>
-                        <Field>
-                          <FieldLabel>Nome empresarial</FieldLabel>
-                          <Input {...clinicForm.register("legal_name")} />
-                        </Field>
-                        <Field>
-                          <FieldLabel>CNPJ</FieldLabel>
-                          <Input {...clinicForm.register("cnpj")} />
-                        </Field>
-                        <div className="grid grid-cols-2 gap-4">
-                          <Field>
-                            <FieldLabel>CEP (clínica)</FieldLabel>
-                            <Input
-                              {...clinicForm.register("clinic_zip_code")}
-                            />
-                          </Field>
-                          <Field>
-                            <FieldLabel>Rua/Logradouro</FieldLabel>
-                            <Input {...clinicForm.register("clinic_street")} />
-                          </Field>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <Field>
-                            <FieldLabel>Número</FieldLabel>
-                            <Input {...clinicForm.register("clinic_number")} />
-                          </Field>
-                          <Field>
-                            <FieldLabel>Cidade</FieldLabel>
-                            <Input {...clinicForm.register("clinic_city")} />
-                          </Field>
-                        </div>
-                      </form>
-                    </Form>
-                  </div>
-                )}
-              </FieldGroup>
-
-              <FieldSeparator />
-
-              <div className="mt-4 flex gap-2">
-                <Button
-                  onClick={handleSubmitAll}
-                  disabled={isSubmitting}
-                  className="flex-1"
-                >
-                  {isSubmitting ? "Enviando..." : "Concluir cadastro"}
-                </Button>
-                <Button variant="ghost" onClick={handleSkip} className="flex-1">
-                  Pular por enquanto
-                </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
