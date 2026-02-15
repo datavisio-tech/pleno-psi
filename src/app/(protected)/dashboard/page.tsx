@@ -36,6 +36,14 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  // Se não houver sessão, redireciona para a tela de autenticação.
+  if (!session?.user) {
+    redirect("/authentication");
+  }
+  // Se o usuário não tiver clínica associada, redireciona para o formulário de clínica.
+  if (!session.user.clinic) {
+    redirect("/clinic-form");
+  }
   const { from, to } = await searchParams;
   if (!from || !to) {
     redirect(

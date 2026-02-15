@@ -8,7 +8,7 @@ function getOrCreateCorrelationId(req: NextRequest) {
   try {
     // node 18+ / edge may support crypto
     // fallback to random string
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+
     const { randomUUID } = require("crypto");
     return randomUUID();
   } catch (e) {
@@ -27,7 +27,7 @@ export function middleware(request: NextRequest) {
   ];
 
   const isPublicRoute = publicRoutes.some((route) =>
-    request.nextUrl.pathname.startsWith(route)
+    request.nextUrl.pathname.startsWith(route),
   );
 
   if (isPublicRoute) {
