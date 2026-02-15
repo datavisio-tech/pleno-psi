@@ -238,15 +238,25 @@ Raiz do projeto (visão resumida):
           - time.ts
         - hocs/
           - with-authentication.tsx
-        - hooks/
-          - use-mobile.ts
-        - lib/
-          - auth-client.ts
-          - auth.ts
-          - next-safe-action.ts
-          - utils.ts
-        - providers/
-          - react-query.tsx
+
+---
+
+- Data: 2026-02-15
+  - Autor: VSCode Agent
+  - Tipo: security
+  - Título: Enforced required clinic context in critical routes (Phase 3A)
+  - Descrição:
+    - Introduced `getRequiredClinicId` helper to extract and enforce clinic context from session.
+    - Added fail‑fast behavior (403) when clinic context is missing.
+    - Validated clinic membership via `users_to_clinics` before performing user updates.
+    - Protected critical routes (`/api/stripe/webhook` and `/subscription/success`) against cross‑tenant updates.
+  - Arquivos afetados:
+    - src/lib/getRequiredClinicId.ts
+    - src/app/api/stripe/webhook/route.ts
+    - src/app/subscription/success/page.tsx
+  - Tag relacionada: v0.3.1-multitenant-phase3A
+
+Status: security applied — Phase 3A implemented and committed. - hooks/ - use-mobile.ts - lib/ - auth-client.ts - auth.ts - next-safe-action.ts - utils.ts - providers/ - react-query.tsx
 
       ## Como rodar em desenvolvimento
 
