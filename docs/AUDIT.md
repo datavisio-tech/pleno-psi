@@ -94,8 +94,21 @@ Raiz do projeto (visão resumida):
       - index.ts
     - delete-patient/
 
-      ````markdown
-      # Auditoria do Projeto — Doutor Agenda
+      ```markdown
+      ---
+
+      - Data: 2026-02-15
+        - Autor: VSCode Agent
+        - Tipo: docs
+        - Descrição curta: Reestruturação profissional do `README.md` para apresentação pública
+        - Detalhes:
+          - Atualizado `README.md` para versão profissional em português, com seções de visão geral, funcionalidades, arquitetura, guia rápido de início e orientações de segurança.
+          - Objetivo: preparar o repositório para exposição pública, investidores e clientes enterprise removendo instruções internas e dados sensíveis.
+          - Commit: `docs(readme): reestruturação profissional do README — Pleno PSI` (commit local criado).
+          - Observação: esta alteração não inclui segredos nem instruções operacionais sensíveis.
+
+      Status: documentação atualizada.
+      ```
 
       ## O que é a aplicação
 
@@ -305,7 +318,7 @@ Raiz do projeto (visão resumida):
       - Branch/PR: feature/add-appointment
       - Notas de deploy/testes: Testar criação de agendamento via UI e validar entradas inválidas.
 
-      ---
+      ***
 
       Arquivo criado para centralizar histórico de mudanças e instruções importantes relacionadas ao desenvolvimento local e às dependências externas (ex.: Stripe). Atualize este arquivo sempre que uma alteração relevante for feita ou quando houver mudanças de infraestrutura/fluxos críticos.
 
@@ -335,7 +348,7 @@ Raiz do projeto (visão resumida):
           2. Rodar `npm install` com a estratégia escolhida.
           3. Executar `npm run dev` e verificar se `next` está presente em `node_modules` e no `package.json` como dependência.
 
-      ---
+      ***
 
       - Data: 2026-02-15
       - Autor: VSCode Agent
@@ -348,7 +361,7 @@ Raiz do projeto (visão resumida):
       - Branch/PR: main
       - Notas de deploy/testes: Reproduzir fluxo sem sessão (abrir /dashboard em navegador sem cookie de sessão) — deve redirecionar para `/authentication`. Abrir com sessão sem clínica — deve redirecionar para `/clinic-form`. Com sessão e clínica válidas, o dashboard renderiza normalmente. Verificar logs do servidor para ausência de TypeError.
 
-      ---
+      ***
 
       - Data: 2026-02-15
       - Autor: VSCode Agent
@@ -382,7 +395,10 @@ Raiz do projeto (visão resumida):
 
       - Branch/PR: main
       - Notas de deploy/testes: Com `LOG_STATUS=ON`, iniciar a aplicação e abrir páginas client deve NÃO causar erro de "Can't resolve 'async_hooks'". Testar fluxo de erro (forçar throw em client) para validar que `error.tsx` chama `logger.error` sem bundling issues. Verificar que logs no servidor incluem `correlationId` e que logs no browser aparecem via `console` quando `LOG_STATUS=ON`.
-      ````
+
+      ```
+
+      ```
 
     ```
 
