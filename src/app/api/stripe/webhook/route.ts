@@ -71,9 +71,21 @@ export const POST = async (request: Request) => {
             plan: "PRO",
           })
           .where(eq(usersTable.id, userId));
+        const updated =
+          typeof result === "number"
+            ? result
+            : ((result as any)?.rowCount ?? null);
         logger.info("stripe.webhook.db.update", {
           module: "stripe.webhook",
           metadata: { userId, result },
+        });
+        logger.info("stripe.webhook.updated-user", {
+          module: "stripe.webhook",
+          metadata: { userId, updated },
+        });
+        logger.info("stripe.webhook: user plan updated", {
+          module: "stripe.webhook",
+          metadata: { userId, updated },
         });
         break;
       }
@@ -140,9 +152,21 @@ export const POST = async (request: Request) => {
             plan: "PRO",
           })
           .where(eq(usersTable.id, userId));
+        const updated =
+          typeof result === "number"
+            ? result
+            : ((result as any)?.rowCount ?? null);
         logger.info("stripe.webhook.db.update", {
           module: "stripe.webhook",
           metadata: { userId, result },
+        });
+        logger.info("stripe.webhook.updated-user", {
+          module: "stripe.webhook",
+          metadata: { userId, updated },
+        });
+        logger.info("stripe.webhook: user plan updated", {
+          module: "stripe.webhook",
+          metadata: { userId, updated },
         });
         break;
       }
@@ -168,9 +192,21 @@ export const POST = async (request: Request) => {
             plan: null,
           })
           .where(eq(usersTable.id, userId));
+        const updated =
+          typeof result === "number"
+            ? result
+            : ((result as any)?.rowCount ?? null);
         logger.info("stripe.webhook.db.update", {
           module: "stripe.webhook",
           metadata: { userId, result },
+        });
+        logger.info("stripe.webhook.updated-user", {
+          module: "stripe.webhook",
+          metadata: { userId, updated },
+        });
+        logger.info("stripe.webhook: user plan updated", {
+          module: "stripe.webhook",
+          metadata: { userId, updated },
         });
       }
     }
