@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 const WithAuthentication = async ({
   children,
@@ -17,18 +18,33 @@ const WithAuthentication = async ({
   mustHavePlan?: boolean;
   mustHaveClinic?: boolean;
 }) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const hdrs = await headers();
+  const session = await auth.api.getSession({ headers: hdrs });
   if (!session?.user) {
+    logger.info("with-authentication: session is null", {
+      correlationId: hdrs.get("x-correlation-id") ?? undefined,
+    });
     redirect("/authentication");
   }
+
+  // request context for logging
+  const requestCtx = {
+    correlationId: hdrs.get("x-correlation-id") ?? undefined,
+    userId: session.user.id,
+    clinicId: session.user.clinic?.id,
+  };
+
   if (mustHavePlan && !session.user.plan) {
+    logger.info("with-authentication: user has no plan", requestCtx);
     redirect("/new-subscription");
   }
   if (mustHaveClinic && !session.user.clinic) {
+    logger.info("with-authentication: user has no clinic", requestCtx);
     redirect("/clinic-form");
   }
+
+  // render children (session valid)
+  logger.info("with-authentication: session valid", requestCtx);
   return children;
 };
 
