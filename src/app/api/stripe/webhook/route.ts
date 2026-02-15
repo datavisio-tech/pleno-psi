@@ -1,10 +1,11 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
 import { db } from "@/db";
-import { usersTable } from "@/db/schema";
+import { usersTable, usersToClinicsTable } from "@/db/schema";
 import { logger } from "@/lib/logger";
+import { getRequiredClinicId } from "@/lib/getRequiredClinicId";
 
 export const POST = async (request: Request) => {
   if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
@@ -50,7 +51,10 @@ export const POST = async (request: Request) => {
           },
         });
         const userId = session.metadata?.userId as string | undefined;
-        if (!userId) {
+        const clinicIdFromMetadata = session.metadata?.clinicId as
+          | string
+          | undefined;
+        if (!userId || !clinicIdFromMetadata) {
           logger.warn(
             "stripe.webhook: checkout.session.completed missing userId",
             {
@@ -60,10 +64,38 @@ export const POST = async (request: Request) => {
           );
           break;
         }
+        // validate clinic context (fail fast)
+        let clinicId: string;
+        try {
+          clinicId = getRequiredClinicId({
+            user: { clinic: { id: clinicIdFromMetadata } },
+          });
+        } catch (e) {
+          logger.warn("stripe.webhook: missing clinicId in session metadata", {
+            module: "stripe.webhook",
+            metadata: { sessionId: session.id ?? null, userId },
+          });
+          return NextResponse.json({ received: false }, { status: 403 });
+        }
+
         const customer =
           typeof session.customer === "string"
             ? session.customer
             : session.customer?.id;
+        // ensure user belongs to clinic
+        const membership = await db.query.usersToClinicsTable.findFirst({
+          where: and(
+            eq(usersToClinicsTable.userId, userId),
+            eq(usersToClinicsTable.clinicId, clinicId),
+          ),
+        });
+        if (!membership) {
+          logger.warn("stripe.webhook: user not associated with clinic", {
+            module: "stripe.webhook",
+            metadata: { sessionId: session.id ?? null, userId, clinicId },
+          });
+          return NextResponse.json({ received: false }, { status: 403 });
+        }
         const result = await db
           .update(usersTable)
           .set({
@@ -102,9 +134,13 @@ export const POST = async (request: Request) => {
           },
         });
         let userId: string | undefined = undefined;
+        let clinicIdFromMetadata: string | undefined = undefined;
         // Try invoice metadata first
         if (invoice.metadata && (invoice.metadata as any).userId) {
           userId = (invoice.metadata as any).userId as string;
+          clinicIdFromMetadata = (invoice.metadata as any).clinicId as
+            | string
+            | undefined;
         }
         // If subscription id present, fetch subscription metadata
         if (!userId && invoice.subscription) {
@@ -121,6 +157,9 @@ export const POST = async (request: Request) => {
               (subscription.metadata as any).userId
             ) {
               userId = (subscription.metadata as any).userId as string;
+              clinicIdFromMetadata = (subscription.metadata as any).clinicId as
+                | string
+                | undefined;
             }
           } catch (e) {
             logger.warn("stripe.webhook: failed to retrieve subscription", {
@@ -129,24 +168,53 @@ export const POST = async (request: Request) => {
             });
           }
         }
-        if (!userId) {
+        if (!userId || !clinicIdFromMetadata) {
           logger.warn("stripe.webhook: invoice.paid missing userId", {
             module: "stripe.webhook",
             metadata: { invoiceId: invoice.id ?? null },
           });
           break;
         }
+        let clinicId: string;
+        try {
+          clinicId = getRequiredClinicId({
+            user: { clinic: { id: clinicIdFromMetadata } },
+          });
+        } catch (e) {
+          logger.warn("stripe.webhook: missing clinicId in invoice metadata", {
+            module: "stripe.webhook",
+            metadata: { invoiceId: invoice.id ?? null, userId },
+          });
+          return NextResponse.json({ received: false }, { status: 403 });
+        }
+
         const customer =
           typeof invoice.customer === "string"
             ? invoice.customer
             : invoice.customer?.id;
+        const membership = await db.query.usersToClinicsTable.findFirst({
+          where: and(
+            eq(usersToClinicsTable.userId, userId),
+            eq(usersToClinicsTable.clinicId, clinicId),
+          ),
+        });
+        if (!membership) {
+          logger.warn(
+            "stripe.webhook: user not associated with clinic (invoice)",
+            {
+              module: "stripe.webhook",
+              metadata: { invoiceId: invoice.id ?? null, userId, clinicId },
+            },
+          );
+          return NextResponse.json({ received: false }, { status: 403 });
+        }
         const result = await db
           .update(usersTable)
           .set({
             stripeSubscriptionId: invoice.subscription
               ? typeof invoice.subscription === "string"
                 ? invoice.subscription
-                : invoice.subscription.id
+                : (invoice.subscription as any).id
               : null,
             stripeCustomerId: customer ?? null,
             plan: "PRO",
@@ -181,8 +249,30 @@ export const POST = async (request: Request) => {
           throw new Error("Subscription not found");
         }
         const userId = subscription.metadata.userId;
-        if (!userId) {
-          throw new Error("User ID not found");
+        const clinicIdFromMetadata = subscription.metadata.clinicId as
+          | string
+          | undefined;
+        if (!userId || !clinicIdFromMetadata) {
+          throw new Error(
+            "User or clinic ID not found in subscription metadata",
+          );
+        }
+        let clinicId: string;
+        try {
+          clinicId = getRequiredClinicId({
+            user: { clinic: { id: clinicIdFromMetadata } },
+          });
+        } catch (e) {
+          throw new Error("Missing clinic context in subscription metadata");
+        }
+        const membership = await db.query.usersToClinicsTable.findFirst({
+          where: and(
+            eq(usersToClinicsTable.userId, userId),
+            eq(usersToClinicsTable.clinicId, clinicId),
+          ),
+        });
+        if (!membership) {
+          throw new Error("User not associated with clinic");
         }
         const result = await db
           .update(usersTable)
